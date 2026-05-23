@@ -1,0 +1,1470 @@
+网购时，多数人下单只看店铺评分和置顶好评，却忽略了京东评论区藏着的选购真相。看似整齐划一的评价里，藏着产品真实品质、隐形短板，避开营销话术，读懂评论细节，才能告别盲目下单，杜绝踩雷。
+
+很多人误以为高好评就等于好产品，这是最大的选购误区。京东不少商家会通过晒单返现、好评有礼等活动，批量刷出精美图文好评。这类评价大多话术雷同、配图精致，只夸赞优点，对产品短板只字不提，参考价值极低。反而被忽略的追评、带图差评和实拍视频，才是普通用户的真实体验，最能还原产品真面目。
+
+真正的选购干货，藏在细节评论里。选购家电、数码产品时，不用只看参数噱头，重点翻看使用一周、一月的追评。新品初期好评多是新鲜感加持，长期追评会暴露卡顿、耗电快、噪音大、品控不稳等核心问题。不少高销量商品，正是靠着短期好评引流，长期质量问题却被掩盖。
+
+同时要学会甄别评论两极分化的产品。部分京东自有品牌和爆款单品，品类扩张后容易出现质量波动，有的用户闭眼入不踩雷，有的却直呼交了智商税。翻看差评共性是关键，若多数差评集中在同一问题，比如材质劣质、售后拖沓、尺寸不符，说明是产品通病，直接避开即可。
+
+网购没有绝对的好物，只有真实的体验。与其被销量和营销套路裹挟，不如深耕评论区细节。学会筛选真实评价、过滤水军话术、捕捉产品短板，就能轻松避开消费陷阱，每一次下单都能精准选到高性价比好物，让网购更省心、更靠谱。
+示例：
+{
+"code": "0",
+"result": {
+"floors": [
+{
+"floorId": "flo_11096",
+"type": "eCustom",
+"mId": "commentlist-ratestar",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {},
+"subFloors": [
+{
+"floorId": "flo_11099",
+"type": "eCustom",
+"mId": "commentlist-label",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {},
+"subFloors": [
+{
+"floorId": "flo_11100",
+"type": "eCustom",
+"mId": "commentlist-commonlabel",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {
+"generalTagList": [
+{
+"name": "全部",
+"identification": "ALL",
+"exposureEventId": "",
+"count": "200000",
+"type": "0",
+"sort": "1",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "99%好评",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"plusSelect": "1",
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+}
+},
+{
+"name": "PLUS会员",
+"identification": "PLUS",
+"exposureEventId": "",
+"count": "0",
+"type": "8",
+"sort": "2",
+"isShowZeroTag": true,
+"isDefaultTag": true,
+"countStr": "精选",
+"supportDefaultSort": true,
+"supportNewSort": false,
+"showTopBar": false,
+"showFoldComment": false
+},
+{
+"name": "回头客",
+"identification": "REBUY",
+"exposureEventId": "",
+"count": "200",
+"type": "18",
+"sort": "2",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "1900+",
+"supportDefaultSort": true,
+"supportNewSort": false,
+"showTopBar": false,
+"showFoldComment": false
+},
+{
+"name": "使用后",
+"nameIconUrl": "https://img12.360buyimg.com/imagetools/jfs/t1/157438/3/36862/1766/64a3ee2aF1a6a4b47/e993a51a9600ba4b.png",
+"grayNameIconUrl": "https://img10.360buyimg.com/imagetools/jfs/t1/159987/6/38365/1751/64a3ee2eFe40fbbc3/12165d6b75a0298c.png",
+"identification": "USED",
+"exposureEventId": "",
+"count": "40",
+"type": "9",
+"sort": "2",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "实评",
+"supportDefaultSort": true,
+"supportNewSort": false,
+"showTopBar": false,
+"showFoldComment": false,
+"tipsImageUrl": "https://img14.360buyimg.com/imagetools/jfs/t1/145622/12/35719/2035/649e400dF655f30a6/82235f77e68397f2.png"
+},
+{
+"name": "图/视频",
+"identification": "SHAITU",
+"exposureEventId": "",
+"count": "5000",
+"type": "102",
+"sort": "3",
+"isShowZeroTag": false,
+"isDefaultTag": false,
+"countStr": "5000+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": false
+},
+{
+"name": "图/视频",
+"identification": "YOUTU",
+"exposureEventId": "",
+"count": "5000",
+"type": "4",
+"sort": "4",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "5000+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true
+},
+{
+"name": "追评",
+"identification": "ZHUIPING",
+"exposureEventId": "CommentsShare_CommentListLabelExpo",
+"count": "500",
+"type": "5",
+"sort": "5",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "500+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true
+},
+{
+"name": "好评",
+"identification": "GOOD",
+"exposureEventId": "",
+"count": "20000",
+"type": "3",
+"sort": "6",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "2万+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true
+},
+{
+"name": "中评",
+"identification": "NORMAL",
+"exposureEventId": "",
+"count": "100",
+"type": "2",
+"sort": "7",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "100+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true
+},
+{
+"name": "差评",
+"identification": "BAD",
+"exposureEventId": "",
+"count": "100",
+"type": "1",
+"sort": "8",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "100+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true
+}
+]
+}
+},
+{
+"floorId": "flo_15001",
+"type": "eCustom",
+"mId": "commentlist-aioverview-v15",
+"tmpId": "Aioverview",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {
+"backgroundImg": "https://img11.360buyimg.com/imagetools/jfs/t1/227691/21/39120/17295/67ca99bdFf5a8365d/f9989c42fdd65392.png",
+"darkBackgroundImg": "https://img14.360buyimg.com/imagetools/jfs/t1/256552/5/30041/1555/67caa9bdFfad5acf6/a426842794e6eb33.png",
+"logoUrl": "https://storage.360buyimg.com/calorie-bucket/thinning/shareOrder/commentList/AILabel.json",
+"title": "AI划重点",
+"updateDate": "来自已购用户真实评价",
+"overviewText": "",
+"aiSemanticsTagList": [
+{
+"tagId": "75852c019e227113f1aa0bb41920be68##V10003T38",
+"name": "容量超大能装",
+"count": "2107",
+"type": "4"
+},
+{
+"tagId": "44bb775e5ad2f9305054de4f77f5262a##V10003T38",
+"name": "制冷快",
+"count": "246",
+"type": "4"
+},
+{
+"tagId": "23adf3c87035879818b8d94b8923b314##V10003T38",
+"name": "尺寸正合适",
+"count": "414",
+"type": "4"
+},
+{
+"tagId": "41877877b209aefb1073055823c6ca04##V10003T38",
+"name": "适合家庭使用",
+"count": "121",
+"type": "4"
+},
+{
+"tagId": "644c24dfeb04401ef43a298d140a7cd8##V10003T38",
+"name": "噪音超低",
+"count": "174",
+"type": "4"
+},
+{
+"tagId": "97400b5fcd5fa756b126f1be9dc4b961##V10003T38",
+"name": "适合老人使用",
+"count": "53",
+"type": "4"
+},
+{
+"tagId": "2142b5aad3ca88d6a98cd5a5685d9342##V10003T38",
+"name": "用着方便",
+"count": "244",
+"type": "4"
+},
+{
+"tagId": "69d231f1853df7f08bcdfbe883259aba##V10003T38",
+"name": "颜色超高级",
+"count": "44",
+"type": "4"
+},
+{
+"tagId": "bc017a5e17231ae7fb0edd24c74f1de0##V10003T38",
+"name": "占地小",
+"count": "43",
+"type": "4"
+},
+{
+"tagId": "3e1dd963b3ba77f1c6c66dcc84669c73##V10003T38",
+"name": "精准控温",
+"count": "11",
+"type": "4"
+},
+{
+"tagId": "a6f68ceb77e880f656f49a6858301478##V10003T38",
+"name": "使用舒服",
+"count": "82",
+"type": "4"
+},
+{
+"tagId": "23bbdf4de048b1b9e81aecc3023e824f##V10003T38",
+"name": "做工很精致",
+"count": "178",
+"type": "4"
+}
+],
+"floorType": "8",
+"rateLabelList": [],
+"maxRateLabelLines": 0,
+"topicArray": [
+{
+"title": "商品亮点",
+"content": "容量大且分区清晰，制冷快且静音节能，适合家庭囤货及需要高效冷冻保鲜的用户。",
+"highlight": false
+},
+{
+"title": "口碑数据",
+"content": "很多买家特别提到容量大且分区合理，另有约60%买家强调制冷快且静音节能。",
+"highlight": false
+},
+{
+"title": "买家原声",
+"content": "“制冷效果很不错，大概一个下午就上冻了，200L的容量足够家里使用，只放肉类的话还是很富裕。”",
+"highlight": false
+}
+],
+"summaryText": "总结自近期发布的真实买家评价",
+"showLike": "1",
+"dataVersion": "8",
+"touchstone_expids": "tsabtest|base64|VUdDcHJvZHVjdF83MDUzNHxUZXN0cHJlNzpVR0Nwcm9kdWN0XzYwMTg4fFRlc3Q6QVBQU1hfODMwNDN8VGVzdA|tsabtest"
+}
+}
+]
+}
+]
+},
+{
+"floorId": "flo_11102",
+"type": "eCustom",
+"mId": "commentlist-sort",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {}
+},
+{
+"floorId": "flo_11103",
+"type": "eCustom",
+"mId": "commentlist-list",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": [
+{
+"commentInfo": {
+"userNickName": "jd_vrz2t0s022jcg3",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323331373632333134353936333334_sma.jpg",
+"commentId": "103764850158490523",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdPsFzgJktdR-OX6-YxX2C",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [],
+"tagCommentContent": "冷冻速度快，声音小，容量大。",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 11:57:02",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "冷冻速度快，声音小，容量大。",
+"pictureInfoList": [],
+"guid": "T6NdPsFzgJktdR-OX6-YxX2C",
+"maidianInfo": "737;794;12392_100057477659_全部_1_1_T6NdPsFzgJktdR-OX6-YxX2C_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 11:57:02",
+"repurchaseInfo": "",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "u_ng31zqmmhxka",
+"userImgURL": "https://storage.360buyimg.com/i.imageUpload/755f3635386464333363366635353631363339373138353738343531_sma.jpg",
+"commentId": "103991500170942398",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMM52jZwtdR2GUqKaw3aJ",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "shoppingBoss",
+"iconType": "4",
+"iconTagId": "tab_3833",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "昨晚中午下单到现在已经收到货了，商家和物流都非常给力，给他们点赞！还是自营的靠谱！感谢物流手送货师傅，辛苦了",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 11:45:09",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "昨晚中午下单到现在已经收到货了，商家和物流都非常给力，给他们点赞！还是自营的靠谱！感谢物流手送货师傅，辛苦了",
+"pictureInfoList": [],
+"guid": "T6NdMM52jZwtdR2GUqKaw3aJ",
+"maidianInfo": "737;794;12392_100057477659_全部_1_2_T6NdMM52jZwtdR2GUqKaw3aJ_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 11:45:09",
+"repurchaseInfo": "",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "jd_c7l940t3t6ip80",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323031373632333134353936313533_sma.jpg",
+"commentId": "104000400171185309",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NaOcd3jJwtdR2HWq6dw3-I",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [],
+"tagCommentContent": "物流很给力",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 11:42:29",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "物流很给力",
+"pictureInfoList": [],
+"guid": "T6NaOcd3jJwtdR2HWq6dw3-I",
+"maidianInfo": "737;794;12392_100057477659_全部_1_3_T6NaOcd3jJwtdR2HWq6dw3-I_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 11:42:29",
+"repurchaseInfo": "",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "张6",
+"userImgURL": "https://storage.360buyimg.com/i.imageUpload/6a645f55476d6e616f47794c77536431373234353032343836373938_sma.jpg",
+"commentId": "103983580162924970",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMM90jZQtdRyEUqScyXiB",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "member",
+"iconType": "0",
+"iconTagId": "tab_3842",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "{$%&外形外观：&%$}非常好\n{$%&容量大小：&%$}容量也很大，足够用了\n上门送货的师傅态度也很好\uD83D\uDC4D",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 11:25:38",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "外形外观：非常好\n容量大小：容量也很大，足够用了\n上门送货的师傅态度也很好\uD83D\uDC4D",
+"pictureInfoList": [],
+"guid": "T6NdMM90jZQtdRyEUqScyXiB",
+"maidianInfo": "737;794;12392_100057477659_全部_1_4_T6NdMM90jZQtdRyEUqScyXiB_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 11:25:38",
+"repurchaseInfo": "",
+"plusUrl": "https://img14.360buyimg.com/img/jfs/t1/277700/12/22783/7087/6800a0d5Fca71724a/d802d331c10cf16c.png",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "jd_61tq92i4co7h4n",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323131373632333134353935323236_sma.jpg",
+"commentId": "103972500171350026",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMMB1jZwtdR2HWKOYwH2H",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "member",
+"iconType": "0",
+"iconTagId": "tab_3842",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+},
+{
+"iconId": "shopBought",
+"iconType": "3",
+"iconTagId": "tab_3845",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "购物不错不错不错，物流给力服务态度很好，祝店家红红火火，下次继续光顾。给个好评语！",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 2,
+"buyCountText": "该店铺购买≥2次",
+"commentDate": "2026-02-05 11:05:52",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "购物不错不错不错，物流给力服务态度很好，祝店家红红火火，下次继续光顾。给个好评语！",
+"pictureInfoList": [],
+"guid": "T6NdMMB1jZwtdR2HWKOYwH2H",
+"maidianInfo": "737;794;12392_100057477659_全部_1_5_T6NdMMB1jZwtdR2HWKOYwH2H_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 11:05:52",
+"repurchaseInfo": "该店铺购买≥2次",
+"plusUrl": "https://img14.360buyimg.com/img/jfs/t1/277700/12/22783/7087/6800a0d5Fca71724a/d802d331c10cf16c.png",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "ji",
+"userImgURL": "https://storage.360buyimg.com/i.imageUpload/6a645f7842734e765573524549617831353936313131373337383834_sma.jpg",
+"commentId": "103972430171538232",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMMB1jJ8tdR2HXqWQwnyD",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [],
+"tagCommentContent": "",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 10:57:25",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "还不错 给家里买的 很满意比上一个便宜",
+"pictureInfoList": [
+{
+"picURL": "https://img30.360buyimg.com/shaidan/s300x300_jfs/t1/390815/15/17056/112869/69840714F13beae68/00a94ff6aa1c7352.jpg.dpg",
+"largePicURL": "https://img30.360buyimg.com/shaidan/s1080x1080_jfs/t1/390815/15/17056/112869/69840714F13beae68/00a94ff6aa1c7352.jpg.dpg",
+"mediaType": "1",
+"showOrderMediaId": "771319142",
+"liveShooting": ""
+},
+{
+"picURL": "https://img30.360buyimg.com/shaidan/s300x300_jfs/t1/388280/13/22712/93165/69840714F3968e836/00a94ff6aae627f1.jpg.dpg",
+"largePicURL": "https://img30.360buyimg.com/shaidan/s1080x1080_jfs/t1/388280/13/22712/93165/69840714F3968e836/00a94ff6aae627f1.jpg.dpg",
+"mediaType": "1",
+"liveShooting": ""
+}
+],
+"guid": "T6NdMMB1jJ8tdR2HXqWQwnyD",
+"maidianInfo": "737;794;12392_100057477659_全部_1_6_T6NdMMB1jJ8tdR2HXqWQwnyD_-100__-100",
+"testId": "A",
+"imageStatus": "1",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 10:57:25",
+"repurchaseInfo": "",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "h958g75h62822x",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836313931373632333134353936383338_sma.jpg",
+"commentId": "103982460171106180",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMM91jJotdR2HWqaewXeB",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "member",
+"iconType": "0",
+"iconTagId": "tab_3842",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+},
+{
+"iconId": "shopBought",
+"iconType": "3",
+"iconTagId": "tab_3845",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "很好",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 2,
+"buyCountText": "该店铺购买≥2次",
+"commentDate": "2026-02-05 10:40:30",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "很好",
+"pictureInfoList": [],
+"guid": "T6NdMM91jJotdR2HWqaewXeB",
+"maidianInfo": "737;794;12392_100057477659_全部_1_7_T6NdMM91jJotdR2HWqaewXeB_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 10:40:30",
+"repurchaseInfo": "该店铺购买≥2次",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "jd137644afe",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323131373632333134353935323236_sma.jpg",
+"commentId": "103993980164104285",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMM50gZQtdRyCWqacwneE",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "member",
+"iconType": "0",
+"iconTagId": "tab_3842",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+},
+{
+"iconId": "shopBought",
+"iconType": "3",
+"iconTagId": "tab_3845",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "送货及时.服务态度好",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 4,
+"buyCountText": "该店铺购买≥2次",
+"commentDate": "2026-02-05 10:22:35",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "送货及时.服务态度好",
+"pictureInfoList": [],
+"guid": "T6NdMM50gZQtdRyCWqacwneE",
+"maidianInfo": "737;794;12392_100057477659_全部_1_8_T6NdMM50gZQtdRyCWqacwneE_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 10:22:35",
+"repurchaseInfo": "该店铺购买≥2次",
+"plusUrl": "https://img14.360buyimg.com/img/jfs/t1/277700/12/22783/7087/6800a0d5Fca71724a/d802d331c10cf16c.png",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "jd_90jwh8h92j2vs8",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323031373632333134353936313533_sma.jpg",
+"commentId": "103993790163805400",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdMM50j5UtdRyFU6adxH-B",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [],
+"tagCommentContent": "整体还可以",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 1,
+"buyCountText": "",
+"commentDate": "2026-02-05 10:08:33",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "整体还可以",
+"pictureInfoList": [],
+"guid": "T6NdMM50j5UtdRyFU6adxH-B",
+"maidianInfo": "737;794;12392_100057477659_全部_1_9_T6NdMM50j5UtdRyFU6adxH-B_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 10:08:33",
+"repurchaseInfo": "",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+},
+{
+"commentInfo": {
+"userNickName": "jd_笑豆子",
+"userImgURL": "https://storage.360buyimg.com/default.image/6a645f6465665f696d675f393836323031373632333134353936313533_sma.jpg",
+"commentId": "103644790157538095",
+"commentShareUrl": "https://share.m.jd.com/shareOrder/showSharePage.action?productId=100057477659&commentId=T6NdP8Nzj5UtdR-BXqWQwHaE",
+"wareAttribute": [
+{
+"颜色": "200L 【减霜80%+】行业top1"
+}
+],
+"afterComment": {},
+"noCommentMessage": "用户未及时作出评价哦~",
+"haveLiked": "0",
+"imageStatusText": "",
+"iconList": [
+{
+"iconId": "member",
+"iconType": "0",
+"iconTagId": "tab_3841",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+},
+{
+"iconId": "shopBought",
+"iconType": "3",
+"iconTagId": "tab_3845",
+"iconJumpUrl": "",
+"iconTagType": "",
+"iconHigh": "14"
+}
+],
+"tagCommentContent": "使用简单方便，容量比较大",
+"carTagInfo": "",
+"ownerStatus": "0",
+"productId": "100057477659",
+"buyCount": 6,
+"buyCountText": "该店铺购买≥2次",
+"commentDate": "2026-02-05 10:01:29",
+"commentScore": "5",
+"commentScoreText": "超赞",
+"praiseCnt": "0",
+"praiseText": "有用",
+"beforePraiseIcon": "https://img11.360buyimg.com/imagetools/jfs/t1/230919/21/2961/1669/6551f925Fd0b7b52d/d58d93a9f2a6a486.png",
+"afterPraiseIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225107/2/3274/4306/6551f925Fe5873551/6236a511983b6cd0.png",
+"replyText": "回复",
+"replyIcon": "https://img10.360buyimg.com/imagetools/jfs/t1/225614/12/1508/705/6551f925Fc2990067/ef456e65cae02b91.png",
+"replyCnt": "0",
+"commentData": "使用简单方便，容量比较大",
+"pictureInfoList": [],
+"guid": "T6NdP8Nzj5UtdR-BXqWQwHaE",
+"maidianInfo": "737;794;12392_100057477659_全部_1_10_T6NdP8Nzj5UtdR-BXqWQwHaE_-100__-100",
+"testId": "A",
+"excellentCommentIcon": "",
+"officerLevel": "0",
+"productSpecifications": "已购 200L 【减霜80%+】行业top1",
+"newCommentDate": "2026-02-05 10:01:29",
+"repurchaseInfo": "该店铺购买≥2次",
+"plusUrl": "https://img14.360buyimg.com/img/jfs/t1/277700/12/22783/7087/6800a0d5Fca71724a/d802d331c10cf16c.png",
+"highlightList": [],
+"carOwner": "",
+"showQuestion": "0"
+}
+}
+]
+},
+{
+"floorId": "flo_15000",
+"type": "eCustom",
+"mId": "commentlist-mixlabel",
+"tmpId": "Mixlabel",
+"cf": {
+"st": {
+"bgc": "#fff"
+}
+},
+"data": {
+"mixTagList": [
+{
+"name": "全部",
+"identification": "ALL",
+"exposureEventId": "",
+"count": "200000",
+"type": "0",
+"sort": "1",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "99%好评",
+"countText": "99%好评",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"plusSelect": "1",
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "图/视频",
+"identification": "SHAITU",
+"exposureEventId": "",
+"count": "5000",
+"type": "102",
+"sort": "3",
+"isShowZeroTag": false,
+"isDefaultTag": false,
+"countStr": "5000+",
+"countText": "5000+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": false,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "图/视频",
+"identification": "YOUTU",
+"exposureEventId": "",
+"count": "5000",
+"type": "4",
+"sort": "4",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "5000+",
+"countText": "5000+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "追评",
+"identification": "ZHUIPING",
+"exposureEventId": "CommentsShare_CommentListLabelExpo",
+"count": "500",
+"type": "5",
+"sort": "5",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "500+",
+"countText": "500+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "回头客",
+"identification": "REBUY",
+"exposureEventId": "",
+"count": "200",
+"type": "18",
+"sort": "2",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "1900+",
+"countText": "1900+",
+"supportDefaultSort": true,
+"supportNewSort": false,
+"showTopBar": true,
+"showFoldComment": false,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"id": "75852c019e227113f1aa0bb41920be68##V10003T38",
+"tagId": "75852c019e227113f1aa0bb41920be68##V10003T38",
+"name": "容量超大能装",
+"count": "2107",
+"type": "0",
+"tagType": "4",
+"countText": "2107",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "44bb775e5ad2f9305054de4f77f5262a##V10003T38",
+"tagId": "44bb775e5ad2f9305054de4f77f5262a##V10003T38",
+"name": "制冷快",
+"count": "246",
+"type": "0",
+"tagType": "4",
+"countText": "246",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "23adf3c87035879818b8d94b8923b314##V10003T38",
+"tagId": "23adf3c87035879818b8d94b8923b314##V10003T38",
+"name": "尺寸正合适",
+"count": "414",
+"type": "0",
+"tagType": "4",
+"countText": "414",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "41877877b209aefb1073055823c6ca04##V10003T38",
+"tagId": "41877877b209aefb1073055823c6ca04##V10003T38",
+"name": "适合家庭使用",
+"count": "121",
+"type": "0",
+"tagType": "4",
+"countText": "121",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "644c24dfeb04401ef43a298d140a7cd8##V10003T38",
+"tagId": "644c24dfeb04401ef43a298d140a7cd8##V10003T38",
+"name": "噪音超低",
+"count": "174",
+"type": "0",
+"tagType": "4",
+"countText": "174",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "97400b5fcd5fa756b126f1be9dc4b961##V10003T38",
+"tagId": "97400b5fcd5fa756b126f1be9dc4b961##V10003T38",
+"name": "适合老人使用",
+"count": "53",
+"type": "0",
+"tagType": "4",
+"countText": "53",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "2142b5aad3ca88d6a98cd5a5685d9342##V10003T38",
+"tagId": "2142b5aad3ca88d6a98cd5a5685d9342##V10003T38",
+"name": "用着方便",
+"count": "244",
+"type": "0",
+"tagType": "4",
+"countText": "244",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "69d231f1853df7f08bcdfbe883259aba##V10003T38",
+"tagId": "69d231f1853df7f08bcdfbe883259aba##V10003T38",
+"name": "颜色超高级",
+"count": "44",
+"type": "0",
+"tagType": "4",
+"countText": "44",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "bc017a5e17231ae7fb0edd24c74f1de0##V10003T38",
+"tagId": "bc017a5e17231ae7fb0edd24c74f1de0##V10003T38",
+"name": "占地小",
+"count": "43",
+"type": "0",
+"tagType": "4",
+"countText": "43",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "3e1dd963b3ba77f1c6c66dcc84669c73##V10003T38",
+"tagId": "3e1dd963b3ba77f1c6c66dcc84669c73##V10003T38",
+"name": "精准控温",
+"count": "11",
+"type": "0",
+"tagType": "4",
+"countText": "11",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "a6f68ceb77e880f656f49a6858301478##V10003T38",
+"tagId": "a6f68ceb77e880f656f49a6858301478##V10003T38",
+"name": "使用舒服",
+"count": "82",
+"type": "0",
+"tagType": "4",
+"countText": "82",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"id": "23bbdf4de048b1b9e81aecc3023e824f##V10003T38",
+"tagId": "23bbdf4de048b1b9e81aecc3023e824f##V10003T38",
+"name": "做工很精致",
+"count": "178",
+"type": "0",
+"tagType": "4",
+"countText": "178",
+"showTopBar": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": true,
+"stand": "1",
+"ckeKeyWordBury": ""
+},
+{
+"name": "好评",
+"identification": "GOOD",
+"exposureEventId": "",
+"count": "20000",
+"type": "3",
+"sort": "6",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "2万+",
+"countText": "2万+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "中评",
+"identification": "NORMAL",
+"exposureEventId": "",
+"count": "100",
+"type": "2",
+"sort": "7",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "100+",
+"countText": "100+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+},
+{
+"name": "差评",
+"identification": "BAD",
+"exposureEventId": "",
+"count": "100",
+"type": "1",
+"sort": "8",
+"isShowZeroTag": false,
+"isDefaultTag": true,
+"countStr": "100+",
+"countText": "100+",
+"supportDefaultSort": true,
+"supportNewSort": true,
+"showTopBar": true,
+"showFoldComment": true,
+"tagDesc": {
+"dialogDesc": "京东致力于为您提供合法、公正、客观、真实的评价晒单，将采取技术手段对恶意、虚假等不当评价进行处理，以便为您消费决策提供有效参考。",
+"icon": "",
+"dialogTitle": "京东评价原则",
+"jumpUrl": "https://club.jd.com/comment/shaidan2.action",
+"dialogBtn": "我知道了",
+"clerk_type": "1",
+"desc": "京东鼓励真实、有用的评价"
+},
+"canBeFiltered": false
+}
+],
+"tagRow": 2
+}
+}
+],
+"pageInfo": {
+"pageId": "tem_11095",
+"name": "评价列表楼层化",
+"data": {
+"contentFoldRowNum": "6",
+"shopReplyFoldRowNum": "2",
+"testId": "A",
+"isCloseCommentReply": "0",
+"likeAnimation": "0",
+"deepPageId": "4d61f51868c95fb2225abddfe1c80087",
+"isShowQuestion": true,
+"isShowRectangleBubble": false,
+"rectangleBubbleText": "没找到有用的？戳这里求助买过的人",
+"timeoutNoClick": "2",
+"pageNumShowBubble": "10",
+"showPicCnt": "5000+",
+"shaituCnt": "500",
+"videoAutoPlaySwitch": "1",
+"defaultGoodCountText": "MTAwMDAw5Liq55So5oi36buY6K6k6K+E5Lu35LqG6K+l5ZWG5ZOB",
+"defaultGoodLogo": "https://m.360buyimg.com/mobilecms/jfs/t10447/176/1359340654/2177/9ceed2ba/59df1d27N55b368df.png",
+"reportEntrance": "",
+"tagStyle": "B",
+"isShowRaderInfo": false,
+"maxPage": "100",
+"touchstone": {
+"touchstone_expids": [
+null,
+"tsabtest|base64|ZnJvbnRwcm9jZWR1cmVfMzE3MjJ8YmFzZQ|tsabtest",
+null,
+"tsabtest|base64|VUdDcHJvZHVjdF85MzQ1OXxUZXN0UHJlMzg6VUdDcHJvZHVjdF82MDE4OHxUZXN0OkFQUFNYXzgzMDQzfFRlc3Q|tsabtest",
+"tsabtest|base64|VUdDcHJvZHVjdF83MDUzNHxUZXN0cHJlNzpVR0Nwcm9kdWN0XzYwMTg4fFRlc3Q6QVBQU1hfODMwNDN8VGVzdA|tsabtest"
+],
+"cid3": "12392",
+"skuid": "100057477659"
+},
+"bottomBtnStyle": "b",
+"cardStyle": "b",
+"replyTextWordLimit": "800",
+"selectEntranceTxt": "选择款式",
+"currentSkuStatus": "2",
+"selectEntrance": "0",
+"style": "1",
+"hasNextPage": true
+}
+}
+}
+}
+联系方式：@some1899
