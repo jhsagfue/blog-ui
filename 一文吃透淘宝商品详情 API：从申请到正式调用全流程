@@ -1,0 +1,201 @@
+淘宝商品详情 API（taobao.item.get）是电商数据采集、竞品监控、店铺运营的核心接口，能够获取商品标题、价格、库存、图文、属性等全维度信息。很多新手卡在账号认证、权限开通、签名生成、接口调用等环节。本文从平台申请、参数规则、代码实战到上线调试，梳理完整流程，搭配配图与可运行代码，帮助开发者一站式完成对接。
+（配图 1：淘宝开放平台首页及开发者入驻入口截图，置于本段下方）
+一、平台账号与应用申请
+接入第一步需完成淘宝开放平台基础配置，也是调用接口的前提。首先登录淘宝开放平台，完成个人或企业实名认证，未认证账号无法创建正式应用。进入应用管理中心，新建第三方应用，系统会自动分配 App Key 和 App Secret，请妥善保存两组密钥，切勿外泄。
+创建应用后，进入接口权限模块，搜索接口名称taobao.item.get，提交使用权限申请。平台会根据应用类型进行审核，审核通过后方可正式调用，未授权接口会直接返回权限错误。
+（配图 2：应用详情页密钥展示 + 商品接口权限申请页面截图，置于本小节末尾）
+二、接口基础规则与核心参数
+淘宝 TOP 接口统一使用 HTTPS 网关请求，固定地址为 https://gw.api.taobao.com/router/rest 。调用分为公共参数和业务参数两部分。
+公共参数为所有接口通用：app_key、method、timestamp、format、v、sign；业务核心参数仅需传入num_iid，即淘宝商品 ID。
+其中签名 sign是校验核心：将所有参数按键名 ASCII 升序拼接字符串，尾部拼接 App Secret，进行 MD5 加密并转为大写字母。参数顺序错误、时间戳过期、签名大小写错误，是调用失败的主要原因。
+三、Python 完整调用代码
+以下代码整合参数组装、签名算法、异常捕获，适配 Python3 环境，替换密钥与商品 ID 即可直接运行。
+python
+运行
+import requests
+import time
+import hashlib
+
+基础配置信息
+APP_KEY = "你的AppKey"
+APP_SECRET = "你的AppSecret"
+GATEWAY_URL = "https://gw.api.taobao.com/router/rest"
+API_METHOD = "taobao.item.get"
+ITEM_ID = "淘宝商品num_iid" # 替换为真实商品ID
+
+生成标准MD5签名
+def make_sign(params, secret):
+sorted_params = sorted(params.items())
+sign_str = "".join(k + v for k, v in sorted_params) + secret
+md5_val = hashlib.md5(sign_str.encode("utf-8")).hexdigest()
+return md5_val.upper()
+
+请求商品详情接口
+def get_item_info():
+params = {
+"app_key": APP_KEY,
+"method": API_METHOD,
+"timestamp": str(int(time.time())),
+"format": "json",
+"v": "2.0",
+"num_iid": ITEM_ID
+}
+params["sign"] = make_sign(params, APP_SECRET)
+try:
+res = requests.get(GATEWAY_URL, params=params, timeout=10)
+return res.json()
+except Exception as e:
+return f"请求异常：{str(e)}"
+
+if name == "main":
+data = get_item_info()
+print(data)
+四、调试排错与上线建议
+代码运行后，若返回错误码，可针对性排查：提示签名错误，检查参数排序、MD5 大小写与密钥；提示无权限，回到开放平台确认接口审核状态；请求超时则检查服务器网络与网关地址。
+正式上线后，需控制请求频率，避免高频调用触发平台限流；对更新缓慢的商品数据做本地缓存，降低接口压力。同时定期监控接口返回日志，及时处理异常。
+从账号申请、权限开通，到签名编写、代码调用，整套流程环环相扣。按照本文步骤操作，即可快速稳定使用淘宝商品详情 API，满足电商数据开发与运营需求。
+示例：
+{
+"code": 0,
+"data": {
+"item": {
+"trade": {
+"buyEnable": null,
+"cartEnable": null,
+"isBanSale4Oversea": null
+},
+"num_iid": "853350484682",
+"title": "mikko联名可爱卡通猫咪毛绒手套女冬季翻盖半指触屏加厚骑行保暖",
+"cat_id": null,
+"cat_name": null,
+"brandName": null,
+"sales": null,
+"detail_url": "//item.taobao.com/item.htm?id=853350484682",
+"images": [
+"//img.alicdn.com/bao/uploaded/i2/3669578932/O1CN01gwTizp2FqufUgtT80_!!4611686018427385012-0-item_pic.jpg",
+"//img.alicdn.com/bao/uploaded/i3/3669578932/O1CN01WSXNe32FqufXLroXV_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i2/3669578932/O1CN01nlUnsV2FqufXGLlkD_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i3/3669578932/O1CN01Viu9122FqufXGMAgz_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN014pzp6k2FqufYJO4fM_!!3669578932.jpg"
+],
+"video": null,
+"video_thumbnail": null,
+"properties_cut": "品牌 / 货号 / 款式 / 上市年份季节 / 质地 / 是否商场同款 / 适用人群 / 类别 / 尺码 / 颜色分类",
+"properties": [
+{
+"name": "品牌",
+"value": "宝茵菲"
+},
+{
+"name": "货号",
+"value": "sp11221"
+},
+{
+"name": "款式",
+"value": "半指手套"
+},
+{
+"name": "上市年份季节",
+"value": "2024年冬季"
+},
+{
+"name": "质地",
+"value": "其他"
+},
+{
+"name": "是否商场同款",
+"value": "否"
+},
+{
+"name": "适用人群",
+"value": "少年, 青年：20-39岁"
+},
+{
+"name": "类别",
+"value": "女"
+},
+{
+"name": "尺码",
+"value": "均码"
+},
+{
+"name": "颜色分类",
+"value": "可爱猫咪"
+}
+],
+"desc_url": "//mdetail.tmall.com/templates/pages/desc?id=853350484682",
+"desc_imgs": [
+"//img.alicdn.com/imgextra/i4/3669578932/O1CN01N7Sm942FqufWtfMQ0_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01ESc4RY2FqufZ6e5pO_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01un73Oi2FqufWmuNeb_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01d4ezGt2Fqufa8wsDj_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01kaFFFR2FqufWtgEVP_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01kbhfae2FqufZ0kCmA_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01CP5EpS2FqufXLqXgl_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN016tslyw2FqufWmx8Ab_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01vyMZ332FqufQKKb2e_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01wy0IFJ2FqufXLuhVW_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01Sdhvux2FqufXwKVa7_!!3669578932.jpg"
+],
+"skus": {
+"quantity": "200",
+"price": "30.8",
+"promotion_price": "29.8",
+"activity_price": null
+},
+"sku_base": [
+{
+"skuId": "5819082434495",
+"propPath": "20509:28383;1627207:3417717",
+"price": "30.8",
+"promotion_price": "29.8",
+"activity_price": null,
+"quantity": "200"
+}
+],
+"sku_props": [
+{
+"pid": "20509",
+"name": "尺码",
+"values": [
+{
+"vid": "28383",
+"name": "均码"
+}
+]
+},
+{
+"pid": "1627207",
+"name": "颜色分类",
+"values": [
+{
+"vid": "3417717",
+"name": "可爱猫咪",
+"image": "//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN01rr3Cme2FqufXUjy9f_!!3669578932.jpg"
+}
+]
+}
+],
+"sku_images": {
+"1627207:3417717": "//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN01rr3Cme2FqufXUjy9f_!!3669578932.jpg"
+}
+},
+"delivery": {
+"from": "浙江金华",
+"to": "东城区",
+"delivery_fee": "0.00",
+"area_id": "110101"
+},
+"seller": {
+"seller_id": null,
+"seller_title": null,
+"shop_title": "宝茵菲旗舰店",
+"shop_id": "542636791",
+"shop_url": "//store.taobao.com/shop/view_shop.htm?user_number_id=",
+"shop_icon": "//img.alicdn.com/imgextra/i1/O1CN01pz5irY1bhDKceJor2_!!6000000003496-2-tps-144-144.png",
+"user_type": "C",
+"evaluates": null
+}
+}
+}
+联系方式：@some1899
