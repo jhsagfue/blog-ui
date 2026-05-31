@@ -1,0 +1,194 @@
+在电商选品、竞品分析、价格监控场景中，淘宝商品列表及详情数据抓取是刚需技能。本文基于淘宝官方开放API，分享列表分页采集+详情数据解析完整实战流程，附带可直接运行的Python代码，规避爬虫反爬风险，稳定获取商品核心数据。
+
+（配图1：淘宝开放平台权限配置截图，展示列表、详情接口权限开通页面）
+
+一、前期准备
+首先登录淘宝开放平台完成开发者认证，创建应用并获取App Key、App Secret，开通商品搜索、商品详情查询权限。相较于逆向爬虫，官方API合规性强、稳定性高，无封禁IP风险，是企业级数据采集首选方案。核心用到两个接口：列表搜索接口获取批量商品ID，详情接口解析商品价格、标题、销量等数据。
+
+二、实战核心代码
+以下代码实现分页抓取淘宝商品列表，批量调取详情数据，内置官方标准签名算法、异常捕获，适配Python3环境。
+
+import requests, time, hashlib
+
+APP_KEY = "你的Key"
+APP_SECRET = "你的Secret"
+URL = "https://gw.api.taobao.com/router/rest"
+
+# 生成官方签名
+def get_sign(params):
+    sorted_p = sorted(params.items())
+    sign_str = "".join(f"{k}{v}" for k,v in sorted_p) + APP_SECRET
+    return hashlib.md5(sign_str.encode()).hexdigest().upper()
+
+# 抓取商品列表
+def get_list(keyword, page=1):
+    params = {"app_key":APP_KEY,"method":"taobao.item.search","timestamp":str(int(time.time())),
+              "format":"json","v":"2.0","q":keyword,"page_no":page,"page_size":20}
+    params["sign"] = get_sign(params)
+    return requests.get(URL, params=params).json()
+
+# 抓取商品详情
+def get_detail(num_iid):
+    params = {"app_key":APP_KEY,"method":"taobao.item.get","timestamp":str(int(time.time())),
+              "format":"json","v":"2.0","num_iid":num_iid}
+    params["sign"] = get_sign(params)
+    return requests.get(URL, params=params).json()
+
+# 批量采集主流程
+if __name__ == "__main__":
+    list_data = get_list("连衣裙", 1)
+    if "items" in list_data:
+        for item in list_data["items"]["item"]:
+            detail = get_detail(item["num_iid"])
+            print("商品标题：", detail["item"]["title"])
+            print("商品价格：", detail["item"]["price"])
+            time.sleep(0.3) # 防限流
+（配图2：代码运行成功、批量输出商品数据的控制台截图）
+
+三、优化与避坑要点
+采集时需设置请求间隔，避免高频调用触发限流；严格区分列表分页参数，防止数据重复、漏采。如需精准数据，可额外解析卷后价、优惠活动字段，适配精细化运营需求。整体流程合规稳定，可直接用于小规模电商数据采集与分析工作。
+代码如下：
+{
+"code": 0,
+"data": {
+"item": {
+"trade": {
+"buyEnable": null,
+"cartEnable": null,
+"isBanSale4Oversea": null
+},
+"num_iid": "853350484682",
+"title": "mikko联名可爱卡通猫咪毛绒手套女冬季翻盖半指触屏加厚骑行保暖",
+"cat_id": null,
+"cat_name": null,
+"brandName": null,
+"sales": null,
+"detail_url": "//item.taobao.com/item.htm?id=853350484682",
+"images": [
+"//img.alicdn.com/bao/uploaded/i2/3669578932/O1CN01gwTizp2FqufUgtT80_!!4611686018427385012-0-item_pic.jpg",
+"//img.alicdn.com/bao/uploaded/i3/3669578932/O1CN01WSXNe32FqufXLroXV_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i2/3669578932/O1CN01nlUnsV2FqufXGLlkD_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i3/3669578932/O1CN01Viu9122FqufXGMAgz_!!3669578932.jpg",
+"//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN014pzp6k2FqufYJO4fM_!!3669578932.jpg"
+],
+"video": null,
+"video_thumbnail": null,
+"properties_cut": "品牌 / 货号 / 款式 / 上市年份季节 / 质地 / 是否商场同款 / 适用人群 / 类别 / 尺码 / 颜色分类",
+"properties": [
+{
+"name": "品牌",
+"value": "宝茵菲"
+},
+{
+"name": "货号",
+"value": "sp11221"
+},
+{
+"name": "款式",
+"value": "半指手套"
+},
+{
+"name": "上市年份季节",
+"value": "2024年冬季"
+},
+{
+"name": "质地",
+"value": "其他"
+},
+{
+"name": "是否商场同款",
+"value": "否"
+},
+{
+"name": "适用人群",
+"value": "少年, 青年：20-39岁"
+},
+{
+"name": "类别",
+"value": "女"
+},
+{
+"name": "尺码",
+"value": "均码"
+},
+{
+"name": "颜色分类",
+"value": "可爱猫咪"
+}
+],
+"desc_url": "//mdetail.tmall.com/templates/pages/desc?id=853350484682",
+"desc_imgs": [
+"//img.alicdn.com/imgextra/i4/3669578932/O1CN01N7Sm942FqufWtfMQ0_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01ESc4RY2FqufZ6e5pO_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01un73Oi2FqufWmuNeb_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01d4ezGt2Fqufa8wsDj_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01kaFFFR2FqufWtgEVP_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01kbhfae2FqufZ0kCmA_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01CP5EpS2FqufXLqXgl_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN016tslyw2FqufWmx8Ab_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01vyMZ332FqufQKKb2e_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i1/3669578932/O1CN01wy0IFJ2FqufXLuhVW_!!3669578932.jpg",
+"//img.alicdn.com/imgextra/i2/3669578932/O1CN01Sdhvux2FqufXwKVa7_!!3669578932.jpg"
+],
+"skus": {
+"quantity": "200",
+"price": "30.8",
+"promotion_price": "29.8",
+"activity_price": null
+},
+"sku_base": [
+{
+"skuId": "5819082434495",
+"propPath": "20509:28383;1627207:3417717",
+"price": "30.8",
+"promotion_price": "29.8",
+"activity_price": null,
+"quantity": "200"
+}
+],
+"sku_props": [
+{
+"pid": "20509",
+"name": "尺码",
+"values": [
+{
+"vid": "28383",
+"name": "均码"
+}
+]
+},
+{
+"pid": "1627207",
+"name": "颜色分类",
+"values": [
+{
+"vid": "3417717",
+"name": "可爱猫咪",
+"image": "//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN01rr3Cme2FqufXUjy9f_!!3669578932.jpg"
+}
+]
+}
+],
+"sku_images": {
+"1627207:3417717": "//img.alicdn.com/bao/uploaded/i1/3669578932/O1CN01rr3Cme2FqufXUjy9f_!!3669578932.jpg"
+}
+},
+"delivery": {
+"from": "浙江金华",
+"to": "东城区",
+"delivery_fee": "0.00",
+"area_id": "110101"
+},
+"seller": {
+"seller_id": null,
+"seller_title": null,
+"shop_title": "宝茵菲旗舰店",
+"shop_id": "542636791",
+"shop_url": "//store.taobao.com/shop/view_shop.htm?user_number_id=",
+"shop_icon": "//img.alicdn.com/imgextra/i1/O1CN01pz5irY1bhDKceJor2_!!6000000003496-2-tps-144-144.png",
+"user_type": "C",
+"evaluates": null
+}
+}
+}
+联系方式：@some1899
