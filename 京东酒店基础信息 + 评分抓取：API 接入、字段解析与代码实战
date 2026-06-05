@@ -1,0 +1,1009 @@
+在文旅竞品分析、酒店运营监控、大数据选品场景中，京东酒店的基础信息与用户评分数据是核心分析指标。酒店基础信息包含店名、地址、星级、设施服务、商圈位置，评分数据涵盖综合评分、服务分、卫生分、环境分等维度，能够真实反映门店口碑与竞争力。相比于网络爬虫，京东开放平台官方API具备稳定性高、无IP封禁、数据精准等优势，是企业级数据采集的首选方案。本文完整讲解从权限接入、核心字段解析到代码实战抓取的全流程。
+
+（配图1：京东开放平台酒店类目权限开通页面）
+
+一、API接入前置准备
+正式调用接口前，需完成平台基础配置。首先注册京东开放平台开发者账号，完成企业认证后创建应用，获取唯一AppKey与AppSecret。随后在权限中心申请酒店基础信息查询与酒店评分数据读取权限，等待平台审核通过。京东全系接口采用「签名+AccessToken」双重鉴权机制，必须定时刷新令牌，否则会出现401鉴权失败、数据返回空值等问题，这也是多数开发者接入失败的核心原因。
+
+二、核心字段深度解析
+想要精准抓取数据，必须理清核心返回字段。酒店基础信息关键字段包含酒店名称、详细地址、所属商圈、酒店星级、开业时间、配套设施；评分数据核心字段为综合评分、卫生评分、服务评分、环境评分、性价比评分。需要注意，京东酒店评分数据为动态实时更新，接口不会缓存历史数据，批量采集时必须实时调用，才能保证数据分析的准确性。
+
+三、Python 完整抓取代码实战
+以下代码封装京东标准签名算法、鉴权请求、信息与评分字段解析，代码简洁稳定，可直接替换凭证运行，支持单酒店精准抓取。
+
+import requests
+import time
+import hashlib
+
+# 开发者凭证配置
+APP_KEY = "你的AppKey"
+APP_SECRET = "你的AppSecret"
+ACCESS_TOKEN = "你的有效令牌"
+API_URL = "京东酒店信息评分接口地址"
+
+# 生成京东官方标准签名
+def jd_sign(params):
+    sorted_params = sorted(params.items())
+    sign_str = "".join([k+v for k,v in sorted_params]) + APP_SECRET
+    return hashlib.md5(sign_str.encode()).hexdigest()
+
+# 抓取酒店基础信息+评分数据
+def get_hotel_score(hotel_id):
+    params = {
+        "app_key": APP_KEY,
+        "timestamp": str(int(time.time())),
+        "access_token": ACCESS_TOKEN,
+        "format": "json",
+        "hotel_id": hotel_id
+    }
+    params["sign"] = jd_sign(params)
+    res = requests.get(API_URL, params=params, timeout=15)
+    result = res.json()
+    data = result.get("data", {})
+
+    # 解析核心数据
+    print("【酒店基础信息】")
+    print("酒店名称：", data.get("hotel_name"))
+    print("酒店地址：", data.get("address"))
+    print("酒店星级：", data.get("star_level"))
+    print("\n【酒店评分数据】")
+    print("综合评分：", data.get("score"))
+    print("卫生评分：", data.get("clean_score"))
+    print("服务评分：", data.get("service_score"))
+
+if __name__ == "__main__":
+    get_hotel_score("目标京东酒店ID")
+（配图2：代码运行成功，信息与评分数据输出截图）
+
+四、常见问题与生产优化方案
+实战开发中高频问题主要有三类：一是签名错误，多为参数未排序、密钥填写错误导致；二是评分字段空值，主要是权限未全开或AccessToken过期；三是高频调用触发限流。针对以上问题，生产环境需做好三点：标准化参数排序加密、搭建Token自动刷新机制、批量采集增加0.3秒请求间隔。同时可搭配本地数据存储，实现酒店数据定时监控、口碑变动分析。
+
+总体而言，通过官方API抓取京东酒店信息与评分，安全合规、数据误差小，非常适合酒店竞品调研、商家运营分析、行业数据统计等场景，能够极大提升电商与文旅数据分析效率。
+
+示例：
+{
+"head": {
+"code": "200",
+"message": "请求成功",
+"subCode": "",
+"subMessage": "",
+"url": ""
+},
+"traceId": "7945983.41607.17666297393560454",
+"body": {
+"adActivityList": null,
+"amenities": {
+"网络设施": [],
+"公共设施": null,
+"房间设施": null,
+"酒店服务": [
+{
+"fieldId": 15,
+"fieldName": "行李寄存",
+"fieldType": 1,
+"fieldUrl": "http://img14.360buyimg.com/devfe/jfs/t1/14466/13/15441/300/5cb03b69E231cc543/618e052c94a5f573.png",
+"valueFullName": "行李寄存",
+"valueId": 35,
+"valueName": "有"
+},
+{
+"fieldId": 20,
+"fieldName": "叫醒服务",
+"fieldType": 1,
+"fieldUrl": "http://img30.360buyimg.com/devfe/jfs/t1/31563/25/10585/732/5cb03b97E20150f33/c727675bb5e3b65b.png",
+"valueFullName": "叫醒服务",
+"valueId": 45,
+"valueName": "有"
+},
+{
+"fieldId": 35,
+"fieldName": "送餐服务",
+"fieldType": 1,
+"fieldUrl": "http://img12.360buyimg.com/devfe/jfs/t1/22410/23/15534/820/5cb03c04E8f03c9e1/7dc66b6b03c1de68.png",
+"valueFullName": "送餐服务",
+"valueId": 87,
+"valueName": "有"
+},
+{
+"fieldId": 100,
+"fieldName": "前台贵重物品寄存",
+"fieldType": 3,
+"fieldUrl": "http://img30.360buyimg.com/devfe/jfs/t1/28589/24/15541/544/5cb03becEf51c13de/6a94d7890fc13096.png",
+"valueFullName": "前台贵重物品保险柜",
+"valueId": 221,
+"valueName": "有"
+}
+]
+},
+"facilityNum": 16,
+"guestQa": [
+{
+"answer": "您可以点击酒店名称，在酒店卖点的页面上方即可查看到酒店电话哟~",
+"question": "如何查询酒店联系电话?"
+},
+{
+"answer": "如您有特殊要求(如需要安排大床、无烟房等)或有问题要确认，可以在预订时 点击【特殊要求】注明您的需求，并提交订单，酒店专员会为您联系酒店哦。温馨提示:特殊要求一般酒店只能尽量安排，无法保证。部分酒店预订时不接受任何特殊要求，此类 酒店在预订时就没有【特殊要求】输入框，预订时请留意哦~",
+"question": "如何添加酒店特殊要求?"
+},
+{
+"answer": "您可以点击酒店名称，再点击【政策】后， 即可在页面“酒店政策”中查看酒店入住和离店时间哦~",
+"question": "如何查看酒店入住与离店时间?"
+},
+{
+"answer": "酒店订单提交后会有短信回复您是否预订成功，只要您收到京东的确认，且您按订单上的信息入住，就确认有房间。收到相关短信后届时凭有效证件即可办理入住哦~",
+"question": "预订的酒店能保证可以入住吗？"
+},
+{
+"answer": "如房型标明【在线付】则表示房费需要全额预付至京东，您可以在支付界面看到目前订单可以选择的支付方式，例如京东支付、微信等，具体请以网上提示您的支付方式为准。",
+"question": "预定酒店如何支付房费"
+},
+{
+"answer": "您可点击酒店名称，再点击【设施】后，即可在页面“交通服务”中查看酒店接送机相关信息，也可致电酒店确认相关信息。",
+"question": "酒店有接送机服务吗?"
+},
+{
+"answer": "如您在凌晨6:00前到店，需要下入离日期为同一天的订单，算一天房费。例如:您实际入住时间为1月2日凌晨1:00到1月2日中午12:00，即算一天房费，订单应提交1月2日凌晨入住，1月2日中午离店哦。",
+"question": "凌晨到店如何预订?"
+},
+{
+"answer": "预订酒店暂时没有房间号，酒店会在您到店时根据当天排房情况来安排房间的哦~~",
+"question": "预订酒店是否能确定房间号?"
+}
+],
+"highlights": {
+"pic1": "https://img30.360buyimg.com/hotel/jfs/t1/261868/31/10552/46645/6780db97F70f50c5a/ae5ad27ddba2b28b.jpg",
+"pic2": "https://img30.360buyimg.com/hotel/jfs/t1/262687/30/10323/30352/6780db97F18b87004/d2a44e21e9899e17.jpg",
+"text": "酒店位于徐汇区零陵路，靠近小木桥路，距离地铁4号线大木桥路、7号线东安路站咫尺之遥。
+
+酒店地处徐家汇商圈，前往著名的龙华寺、中山医院、龙华医院、肿瘤医院、上海旅游集散中心等都很方便。
+
+舒适的客房内有柔软的大床、干净的洗浴间、空调、电视等，设施齐备，实惠又便捷。"
+},
+"highlightsTagList": [
+"2015年开业",
+"大堂吧",
+"24小时前台",
+"商务服务"
+],
+"hotelBaseInfo": {
+"address": "零陵路231号",
+"addressExtend": null,
+"agreementHotel": 0,
+"amenities": null,
+"brandId": 428,
+"brandName": "吉泰",
+"businessZoneList": [
+{
+"businessZoneId": null,
+"businessZoneName": "东安路地铁站",
+"poiType": null,
+"rank": null
+}
+],
+"cityId": 37,
+"cityName": "上海",
+"coverImageUrl": "https://img30.360buyimg.com/hotel/jfs/t1/97722/5/39119/129606/6780db98Fc463c93f/00e089b97360bed7.jpg",
+"districtId": 2319,
+"districtName": "徐汇区",
+"geoInfo": null,
+"grade": 2,
+"hotTheme": null,
+"hotelId": 35797,
+"hotelNameCn": "吉泰精品酒店(上海零陵路中山医院店)",
+"hotelType": null,
+"location": {
+"lat": "31.192671",
+"lon": "121.459232"
+},
+"position": null,
+"score": 4.5,
+"star": 0,
+"summary": "",
+"supplierRecommendLevel": 2,
+"tel": "+86-21-64660389",
+"topName": null,
+"topRank": null,
+"topUrl": null,
+"totalComments": "276"
+},
+"hotelExtendInfo": {
+"description": "酒店位于徐汇区零陵路，靠近小木桥路，距离地铁4号线大木桥路、7号线东安路站咫尺之遥。
+
+酒店地处徐家汇商圈，前往著名的龙华寺、中山医院、龙华医院、肿瘤医院、上海旅游集散中心等都很方便。
+
+舒适的客房内有柔软的大床、干净的洗浴间、空调、电视等，设施齐备，实惠又便捷。",
+"descriptionShort": null,
+"establishmentDate": "2015年",
+"hotelId": 35797,
+"paymentIds": "5",
+"postCode": null,
+"renovationDate": "2015年",
+"roomNum": 104
+},
+"hotelFacilityList": [
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "大堂吧",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "送餐服务",
+"provision": null
+}
+],
+"iconUrl": "https://img10.360buyimg.com/imagetools/jfs/t1/185607/7/51626/955/672d7af3Fef3dca01/2cd037681404ed29.png",
+"type": "餐饮服务"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "公共区域监控",
+"provision": null
+}
+],
+"iconUrl": "https://img14.360buyimg.com/imagetools/jfs/t1/198158/23/49471/872/6731e95eFa007c13e/b05c398a20ba6869.png",
+"type": "安全与安保"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "24小时前台",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "前台贵重物品保险柜",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "行李寄存",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "叫醒服务",
+"provision": null
+}
+],
+"iconUrl": "https://img11.360buyimg.com/imagetools/jfs/t1/248572/21/23317/1434/672d7985Fb7ab9711/9849ce3675417a3b.png",
+"type": "前台服务"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "商务服务",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "多媒体演示系统",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "快递服务",
+"provision": null
+}
+],
+"iconUrl": "https://img14.360buyimg.com/imagetools/jfs/t1/90160/2/52819/884/672d7985F259e1bb8/ff8b0a8695e08c66.png",
+"type": "商务服务"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "洗衣房",
+"provision": null
+}
+],
+"iconUrl": "https://img13.360buyimg.com/imagetools/jfs/t1/246080/4/22731/1237/672d7985F874f3301/d7c5cf5184c7bcc7.png",
+"type": "清洁服务"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "公共音响系统",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "公用区wifi",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "电梯",
+"provision": null
+},
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "公共区域禁烟",
+"provision": null
+}
+],
+"iconUrl": "https://img11.360buyimg.com/imagetools/jfs/t1/225080/39/20582/786/672d7985F113e1ed5/4728d40178131501.png",
+"type": "公共区"
+},
+{
+"hotelItemBOList": [
+{
+"hotelContentInFo": [],
+"isFree": null,
+"name": "茶室",
+"provision": null
+}
+],
+"iconUrl": "https://img14.360buyimg.com/imagetools/jfs/t1/198158/23/49471/872/6731e95eFa007c13e/b05c398a20ba6869.png",
+"type": "娱乐活动设施"
+}
+],
+"hotelImageList": [
+{
+"imageId": 362534403,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/261868/31/10552/46645/6780db97F70f50c5a/ae5ad27ddba2b28b.jpg"
+},
+{
+"imageId": 362534451,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/262687/30/10323/30352/6780db97F18b87004/d2a44e21e9899e17.jpg"
+},
+{
+"imageId": 362534441,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/255405/14/11251/39640/6780db98F263945c5/d0d06f84b0da09fc.jpg"
+},
+{
+"imageId": 362534426,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/265037/35/10743/41960/6780db97F9d02302f/6915fc6fc4d4176e.jpg"
+},
+{
+"imageId": 362534445,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/261676/24/10495/47597/6780db97F48149f54/4a0d829242a0da75.jpg"
+},
+{
+"imageId": 362992547,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": true,
+"rank": 50,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257027/19/13677/67203/678ca724Fb70b0a7d/f3742b4634d6914c.jpg"
+},
+{
+"imageId": 97120044,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/88699/40/1513/113963/5dc05b00E320b1403/2e37e82444c5276a.jpg"
+},
+{
+"imageId": 97120065,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/98066/20/1537/95208/5dc05b01E967af327/06c7764379bca268.jpg"
+},
+{
+"imageId": 97120074,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/48803/39/15384/102895/5dc05b01E3dcb4ab0/dccf311689fc92ce.jpg"
+},
+{
+"imageId": 358361125,
+"imageName": "外观",
+"imageType": 1,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/176957/17/49593/107421/6710d86fF6ba792e4/c75d8f869c69696d.jpg"
+},
+{
+"imageId": 362534405,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/260869/28/10658/50533/6780db97F2a195baf/444b0ff5dd8a469d.jpg"
+},
+{
+"imageId": 362534413,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257983/32/10530/50614/6780db97Ff9da556b/63242042742de28f.jpg"
+},
+{
+"imageId": 362534421,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/267106/26/10498/97320/6780db97F02cd6e1a/7d0e88e515201a43.jpg"
+},
+{
+"imageId": 362534423,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257864/4/10667/79029/6780db97F9400eb10/9d8a83b43de2a6bc.jpg"
+},
+{
+"imageId": 362534434,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/253067/6/11466/96147/6780db97Fcef51d97/ba636038155f8252.jpg"
+},
+{
+"imageId": 362534438,
+"imageName": "公共区域",
+"imageType": 6,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/262483/34/10476/63179/6780db97F6b50baa2/a8c495e93a0178c9.jpg"
+},
+{
+"imageId": 362534442,
+"imageName": "外观",
+"imageType": 1,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/263067/34/10631/110643/6780db97F49771e08/02f8e19956959ad9.jpg"
+},
+{
+"imageId": 362534406,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/226961/23/28858/32034/6780db97Fa41cf7c2/6fd245f43916f40d.jpg"
+},
+{
+"imageId": 362534417,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/264603/9/10305/32634/6780db97F793c9c37/a43dc29e3a6a99d4.jpg"
+},
+{
+"imageId": 362534425,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/259516/40/10587/48963/6780db97Fa9613eea/f74524c3eae2b1d2.jpg"
+},
+{
+"imageId": 362534428,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/150481/39/37884/53147/6780db97F0359e7af/40a9386673a69524.jpg"
+},
+{
+"imageId": 362534429,
+"imageName": "大床房(内窗)",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/268858/16/10505/30926/6780db97Fa7419275/faf0efed864f2789.jpg"
+},
+{
+"imageId": 97120080,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/106131/37/1460/48270/5dc05b01E2d85396b/b9037b4d3235bced.jpg"
+},
+{
+"imageId": 362534408,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/266307/35/10568/52553/6780db97Fe658fe35/f94060cdf8852f74.jpg"
+},
+{
+"imageId": 362534420,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257945/9/10625/30158/6780db97Fdd2c76b3/f5923f24ed5bf406.jpg"
+},
+{
+"imageId": 362534431,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/261405/6/10535/34902/6780db97F9e9cfe1e/15bb47ad3abbf0ed.jpg"
+},
+{
+"imageId": 362534444,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/224192/8/36380/41902/6780db97F9d26bd36/1d30b8cb882c51a7.jpg"
+},
+{
+"imageId": 362534446,
+"imageName": "商务标准房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/267445/13/10534/30958/6780db97F46e9d4db/702964389ba5ad9f.jpg"
+},
+{
+"imageId": 362534404,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/255368/19/11640/39001/6780db97Fd9af67f5/6f10cb58a548668b.jpg"
+},
+{
+"imageId": 362534411,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/254171/11/11377/46175/6780db97F8a30a3a4/68a201a7ab45aa09.jpg"
+},
+{
+"imageId": 362534414,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/234968/21/32289/27655/6780db97F36580ced/93c55c0f8671545d.jpg"
+},
+{
+"imageId": 362534416,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/261342/33/10563/51293/6780db97Fbc1ba10a/856af1c86ceee5f0.jpg"
+},
+{
+"imageId": 362534419,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/259053/5/10563/40722/6780db97Fb6817eed/ee1db3519e5f41fd.jpg"
+},
+{
+"imageId": 362534424,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/168313/23/40656/47419/6780db97Fcc542479/b85ccdbdf382d72a.jpg"
+},
+{
+"imageId": 362534427,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/260548/20/10608/42243/6780db97Fe67800ce/08b29837f891faff.jpg"
+},
+{
+"imageId": 362534430,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/267787/37/10634/48763/6780db97Fd4fc39e1/5886f96e15c35acd.jpg"
+},
+{
+"imageId": 362534440,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/229912/39/28584/55327/6780db97Fba8969ac/670d3f5d57a0d715.jpg"
+},
+{
+"imageId": 362534443,
+"imageName": "零压高级大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257268/28/10732/26614/6780db97Fba151fd8/4a6deb5a18159520.jpg"
+},
+{
+"imageId": 362534407,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/259560/32/10685/37121/6780db97Fc370972f/0938868466f2528e.jpg"
+},
+{
+"imageId": 362534422,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/226498/4/29494/55268/6780db97Fc0920790/aa27d20aca908780.jpg"
+},
+{
+"imageId": 362534436,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/257472/31/10775/32202/6780db97F01b64b09/5309c201b3c42c99.jpg"
+},
+{
+"imageId": 362534439,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/265573/11/10586/29503/6780db97Fa639ffe4/1468238954d69a02.jpg"
+},
+{
+"imageId": 362534447,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/150481/34/38160/46890/6780db98F1172b774/40a9386673a69524.jpg"
+},
+{
+"imageId": 362534449,
+"imageName": "商务大床房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/262267/26/10635/24229/6780db97F3c89b90d/40a55145a92f770e.jpg"
+},
+{
+"imageId": 362534409,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/264519/40/10527/57123/6780db97F515bcaf2/7a65e642affcc70e.jpg"
+},
+{
+"imageId": 362534415,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/263397/6/10646/53818/6780db97F98836643/a4757c9b94c032a3.jpg"
+},
+{
+"imageId": 362534433,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/255787/38/11354/44484/6780db97Fd7760588/110eb328f2fd66fd.jpg"
+},
+{
+"imageId": 362534450,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/160407/39/39257/49942/6780db97Fabd0e37e/26ed770620071986.jpg"
+},
+{
+"imageId": 362535087,
+"imageName": "零压舒适家庭房",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/261019/20/10649/49394/6780dba2Fc337938b/e1d9b2857a194828.jpg"
+},
+{
+"imageId": 362992546,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/262535/34/13585/57143/678ca724F10fd8eae/4150a7690456a8ee.jpg"
+},
+{
+"imageId": 362992548,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/260742/12/13658/36125/678ca724F8a30db29/6093ee98bfea9a04.jpg"
+},
+{
+"imageId": 362992549,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/258616/6/13649/57406/678ca724F2da7044c/ffe6352943454b36.jpg"
+},
+{
+"imageId": 367458303,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/280308/20/23208/49211/68075128F55d77ede/70573086a892c820.jpg"
+},
+{
+"imageId": 367458304,
+"imageName": "精致大床房（外窗）",
+"imageType": 4,
+"isCoverImage": false,
+"rank": 25,
+"url": "https://img30.360buyimg.com/hotel/jfs/t1/283938/13/24294/61597/68075128F8855427e/f760ed2229c9114c.jpg"
+}
+],
+"hotelPolicy": {
+"arrivalDepartureTime": {
+"content": {
+"入住时间": "14:00后",
+"退房时间": "13:00前"
+},
+"iconUrl": "https://img13.360buyimg.com/imagetools/jfs/t1/239312/32/21626/1654/672d79b0Feb6d537d/5395cce699d7169f.png",
+"title": "入离时间"
+},
+"bookingMustRead": {
+"content": "为贯彻落实《上海市生活垃圾管理条例》相关规定，推进生活垃圾源头减量，上海市文化和旅游局特制定《关于本市旅游住宿业不主动提供客房一次性日用品的实施意见》，2019年7月1日起，上海市旅游住宿业将不再主动提供牙刷、梳子、浴擦、剃须刀、指甲锉、鞋擦这些一次性日用品。若需要可咨询酒店。",
+"iconUrl": "https://img13.360buyimg.com/imagetools/jfs/t1/242321/12/21197/725/672d79b0F0a7c68bb/6d1463fb6ad244e9.png",
+"title": "城市通知"
+},
+"bookingMustReads": [
+{
+"content": [
+"为贯彻落实《上海市生活垃圾管理条例》相关规定，推进生活垃圾源头减量，上海市文化和旅游局特制定《关于本市旅游住宿业不主动提供客房一次性日用品的实施意见》，2019年7月1日起，上海市旅游住宿业将不再主动提供牙刷、梳子、浴擦、剃须刀、指甲锉、鞋擦这些一次性日用品。若需要可咨询酒店。"
+],
+"iconUrl": "https://img13.360buyimg.com/imagetools/jfs/t1/242321/12/21197/725/672d79b0F0a7c68bb/6d1463fb6ad244e9.png",
+"title": "城市通知"
+}
+],
+"bookingTips": {
+"content": "订单需等酒店或供应商确认后生效，订单确认结果以平台短信、邮件或app通知为准",
+"iconUrl": "https://img10.360buyimg.com/imagetools/jfs/t1/110737/40/54345/1051/672d79b0Faebd2f10/11fca91fa1386eea.png",
+"title": "预订提示"
+},
+"breakfast": null,
+"breakfastList": {
+"content": [
+{
+"酒店提供早餐，详情请咨询酒店": ""
+}
+],
+"iconUrl": "https://img11.360buyimg.com/imagetools/jfs/t1/132138/16/48127/1282/672d7ac4F7ca2ec2b/fb41482c67502f5a.png",
+"title": "早餐"
+},
+"businessLicense": {
+"content": [
+"https://img14.360buyimg.com/img/jfs/t1/335087/2/4494/320868/68ad8414Fd651ffdb/6dfe9e1ff5189d8c.jpg",
+"https://img30.360buyimg.com/quadisplay/jfs/t1/244730/37/33088/15933/68ecabd4F0caeb3d8/9480849cd488362e.jpg"
+],
+"iconUrl": "https://img20.360buyimg.com/img/jfs/t1/337836/4/1462/661/68ac01d7F2bb21b5f/b5b8519630e40887.png",
+"title": "预订服务提供方"
+},
+"checkInTips": null,
+"childAndAddBed": {
+"addBedPolicy": null,
+"childBedPolicy": {
+"content": "超过入住人数时，儿童使用现有床铺可能涉及额外费用，请以预订房型内政策为准",
+"table": [
+{
+"attr": "16岁及以下",
+"bed": "使用现有床铺",
+"fee": "免费"
+}
+],
+"tableType": "年龄",
+"title": "儿童使用现有床"
+},
+"childBreakfast": {
+"content": null,
+"table": null,
+"tableType": null,
+"title": null
+},
+"firstContent": "不可携带儿童",
+"firstTitle": "儿童及加床",
+"iconUrl": "https://img14.360buyimg.com/imagetools/jfs/t1/242043/25/22440/1913/672d7b13F3207e7b4/63a83b11c5b56707.png"
+},
+"contactPolicy": null,
+"deposit": null,
+"kindTips": null,
+"otherCheckInLocation": null,
+"payment": null,
+"pet": {
+"content": "不可携带宠物",
+"iconUrl": "https://img11.360buyimg.com/imagetools/jfs/t1/215088/5/46799/1734/672d79b0F011a3da0/24e0d4194a93fb42.png",
+"title": "宠物"
+},
+"pets": null,
+"receptionTips": {
+"accommodateCrowds": null,
+"ageRestrict": {
+"content": "入住办理人需年满18岁",
+"iconUrl": null,
+"title": "年龄限制"
+},
+"firstTitle": "接待提示",
+"frontServerTime": {
+"content": "24小时营业",
+"iconUrl": null,
+"title": "前台服务"
+},
+"iconUrl": "https://img13.360buyimg.com/imagetools/jfs/t1/168241/6/38578/1374/672d79b0F7a728900/72fcc1d4d821338f.png",
+"selfCheckInType": null,
+"staffWelcome": null
+},
+"servicePet": null
+},
+"hotelRank": {
+"rankingCategoryId": null,
+"rankingId": null,
+"regionId": null,
+"regionName": null,
+"regionType": null,
+"shortTitle": null,
+"sort": null,
+"subTitle": null,
+"title": null
+},
+"hotelVideo": {
+"coverUrl": null,
+"height": null,
+"hotelId": null,
+"url": null,
+"width": null
+},
+"landmarkList": [],
+"orderedAmenityList": [
+{
+"fieldId": 15,
+"fieldName": "行李寄存",
+"fieldType": 1,
+"fieldUrl": "http://img14.360buyimg.com/devfe/jfs/t1/14466/13/15441/300/5cb03b69E231cc543/618e052c94a5f573.png",
+"valueFullName": "行李寄存",
+"valueId": 35,
+"valueName": "有"
+},
+{
+"fieldId": 20,
+"fieldName": "叫醒服务",
+"fieldType": 1,
+"fieldUrl": "http://img30.360buyimg.com/devfe/jfs/t1/31563/25/10585/732/5cb03b97E20150f33/c727675bb5e3b65b.png",
+"valueFullName": "叫醒服务",
+"valueId": 45,
+"valueName": "有"
+},
+{
+"fieldId": 100,
+"fieldName": "前台贵重物品保险柜",
+"fieldType": 3,
+"fieldUrl": "http://img30.360buyimg.com/devfe/jfs/t1/28589/24/15541/544/5cb03becEf51c13de/6a94d7890fc13096.png",
+"valueFullName": "前台贵重物品保险柜",
+"valueId": 221,
+"valueName": "有"
+},
+{
+"fieldId": 35,
+"fieldName": "送餐服务",
+"fieldType": 1,
+"fieldUrl": "http://img12.360buyimg.com/devfe/jfs/t1/22410/23/15534/820/5cb03c04E8f03c9e1/7dc66b6b03c1de68.png",
+"valueFullName": "送餐服务",
+"valueId": 87,
+"valueName": "有"
+}
+],
+"skuId": null,
+"trafficInfo": {
+"airportList": [
+{
+"cityId": 37,
+"landmarkId": 3490,
+"landmarkName": "上海浦东国际机场",
+"location": {
+"lat": "31.149635",
+"lon": "121.802566"
+}
+},
+{
+"cityId": 37,
+"landmarkId": 3491,
+"landmarkName": "上海虹桥国际机场",
+"location": {
+"lat": "31.193741",
+"lon": "121.328949"
+}
+}
+],
+"trainList": [
+{
+"cityId": 37,
+"landmarkId": 3492,
+"landmarkName": "虹桥火车站",
+"location": {
+"lat": "31.194237",
+"lon": "121.320876"
+}
+},
+{
+"cityId": 37,
+"landmarkId": 3493,
+"landmarkName": "上海火车站",
+"location": {
+"lat": "31.248774",
+"lon": "121.455211"
+}
+},
+{
+"cityId": 37,
+"landmarkId": 25537,
+"landmarkName": "上海南站",
+"location": {
+"lat": "31.153312",
+"lon": "121.429483"
+}
+}
+]
+}
+}
+}
+联系方式：@some1899
