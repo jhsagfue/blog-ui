@@ -1,0 +1,65 @@
+在进行小红书开放平台开发时，Token是开发者接触最多、也是最重要的认证凭证之一。无论是获取用户信息、发布内容、查询数据，还是调用各类开放接口，都需要通过Token完成身份验证。因此，理解Token的作用、获取方式以及使用规范，是每一位开发者入门小红书API开发的第一步。
+
+简单来说，Token可以理解为系统颁发给应用程序的一张“电子通行证”。当开发者向小红书服务器发起接口请求时，服务器需要确认请求来源是否合法。此时，请求中携带的Token便承担了身份认证的职责。只有验证通过，服务器才会返回对应的数据结果。
+
+从技术架构角度来看，小红书采用OAuth 2.0授权机制管理第三方应用访问权限。开发者在开放平台注册应用后，会获得App Key和App Secret等基础凭证。随后通过授权流程获取Access Token，再利用该Token访问相应接口资源。这种机制既保障了用户数据安全，也实现了权限的精细化管理。
+
+很多初学者容易将Token与账号密码混为一谈，实际上两者有本质区别。账号密码用于用户身份登录，而Token用于接口访问授权。开发过程中，开发者不应该直接保存用户密码，而是通过合法授权获取Token来完成后续操作。这也是当前互联网平台普遍采用的安全认证模式。
+
+需要特别注意的是，Access Token通常具有有效期限制。例如某些接口返回的Token可能在数小时或数天后失效。当Token过期后，接口请求会返回认证失败错误。因此，实际项目中往往需要建立自动检测和刷新机制，确保业务系统能够持续稳定运行。
+
+下面是一个典型的Token获取流程：
+
+第一步，用户访问开发者构建的授权页面；
+
+第二步，用户确认授权请求；
+
+第三步，小红书服务器返回授权码（Authorization Code）；
+
+第四步，开发者服务器使用授权码换取Access Token；
+
+第五步，系统保存Token并用于后续接口调用。
+
+获得Token后，请求接口时通常需要在HTTP请求头中携带认证信息，例如：
+
+Authorization: Bearer Access_Token
+
+服务器接收到请求后，会验证Token是否有效、是否过期以及是否具备对应权限。如果验证成功，即可返回接口数据。
+
+随着平台对数据安全和合规要求不断提高，开发者必须严格遵守开放平台规范。任何通过逆向工程、抓包破解、模拟登录等非官方方式获取Token的行为，都可能违反平台协议，导致应用封禁甚至法律风险。因此，在2026年的开发环境下，推荐始终通过官方授权流程获取和管理Token。
+
+总的来说，Token不仅是连接开发者应用与小红书开放平台的桥梁，更是保障用户隐私和平台安全的重要机制。掌握Token的原理与使用方法，能够帮助开发者更加高效地完成接口开发、权限管理以及系统集成工作。在下一章节中，我们将详细介绍小红书开放平台的注册流程，以及如何通过官方渠道申请应用并获取开发所需的认证凭证。
+
+示例：
+{
+":method": "POST",
+":authority": "edith.xiaohongshu.com",
+":path": "/api/sns/v1/note/detailfeed/preload",
+":scheme": "https",
+"content-length": "1701",
+"x-legacy-fid": "",
+"user-agent": "discover/9.28.1 (iPhone; iOS 16.7.11; Scale/3.00) Resolution/10801920 Version/9.28.1 Build/9281803 Device/(Apple Inc.;iPhone10,2) NetType/WiFi",
+"xy-direction": "75",
+"x-xray-traceid": "cf14b1f36e1e3ab03075b1a1137aa9cf",
+"xy-scene": "point=601&fs=0",
+"x-mini-sig": "d8e22acdcd9e812b089ae71016dece4805f7c663c9c45695ec3cf02cb8b31ea9",
+"x-b3-traceid": "c3efea661096893f",
+"x-mini-mua": "eyJhIjoiRUNGQUFGMDIiLCJjIjo0NTQsImkiOjIsImsiOiJiNjYzMWQzOTNjYmM4MjBhNDFmNzQ2MzEyZjgzYmI3MTYxOGU1NGMyYmZiZjY3NWY1MTZkNmZlMGVkYjdhNDZkIiwibSI6IjE3Nzg4MTA4NzM1NjYiLCJuIjoiZDFjZTc0MTMwNDVmM2RmZTZhZGE4YzQ5NjRlOGJmZjkiLCJvIjoiUlV1SW5FWHVqZ2JfQ1pWWGYwaF9XdyIsInAiOiJpIiwicyI6ImI3MzMxMjY1YWQzODhjNDUzNWMxY2RkZmYyODZmYzBjIiwidSI6IjAwMDAwMDAwNTNjZGJjM2NmMDQ2MTAyNmFjZTg2N2UyMjcyNTdhN2UiLCJ2IjoiMi4yLjEzIn0.BRWLm-hQ3ZrASMrIJuxGoe5aVbBL_SHXfMcNb9muy7pybeW4vk4LybxzBgX1QHhhk7RgOFubr3-dKeqUEp9eT-ge8aaINq8dS6mywPkwntllcVrJ4R-6G6Di12B4abLHAEwavoMw8_Ll5PODcYNYFTpZv0YaOXRDx7Kk0YZAGPWg08O3xPgOi2US4KVZ7RK1JxdTVFSGRcXI_S6bkuk7tvCcg_mAuCAY19Zwm_ICqCxSj3K6_GX_wmRVXXASvL1xXyzGZL92YNcWQ18BhI-_0NONN_EBHUro9akkPZI-g7UKrF6K4d-6l32ht2FcNRyZqogAmR8qO5in0u-r8Jmmz8nIjOp6--Q1Jwe5JHHrROK-Ykwwmf8bTNRQ43D8EbhlDwkGwA08WZIx-JpEfLYp2UjQwYwEl41-o0vHUrOBMhYZAuCGalQjydBOp3q4UAZIoyNyTYul745HyIPZATby4Rwy9awiA5Z7_GHXVhjKBKzjc4EqJktwO_CvhAFWXChFwp6SQvIWrneQPbjICWxu5_ZDCEoHqFlSo-j-R5Cx-tkUQt90dY6dqFeVflZEBy6GR74sfMIRXgsI10goSzZa-A.",
+"accept-language": "zh-Hans;q=1, en;q=0.9",
+"x-mini-nsig": "388a2509a56ea357a379725a2528ffcfbe9fd7806868f9fff902b3a6d49c3705",
+"x-legacy-did": "6F318809-5EC6-42EF-A97A-5FA17149723C",
+"x-mini-gid": "7c8d76f49d20548722947b53a2d48e623a0a5cf84735988077558f2b",
+"x-mini-s1": "ANUAAAAB0BVDDihx0yjW3TcGbHvi1qdACSXjyhKMFi/56i4tERrhNCZDofh9lkAcsk/eN3xK3+zDD57cp04=",
+"shield": "XYAAEAAgAAAAEAAABTAAAAUzUWEe4xG1IYD9/c+qCLOlKGmTtFa+lG438MdOBeRK5Es4exlr5nRZ39ipNZz8Qoqbt+oKs1YQxLZxSJY7rw1SxihZeecGzD5dP/eLY6/Ij0nWPH",
+"x-net-core": "crn",
+"xy-platform-info": "platform=iOS&version=9.28.1&build=9281803&deviceId=6F318809-5EC6-42EF-A97A-5FA17149723C&bundle=com.xingin.discover",
+"content-type": "application/x-www-form-urlencoded; charset=utf-8",
+"mode": "gslb",
+"accept-encoding": "gzip;q=1.0,compress;q=0.5",
+"xy-common-params": "SUE=1&app_id=ECFAAF02&auto_trans=0&build=9281803&channel=AppStore&data_ctry=CN&deviceId=6F318809-5EC6-42EF-A97A-5FA17149723C&device_level=0&device_model=phone&did=36fa919d8a93e21be1ed0f7b4c328a11&dlang=zh&fid=&gid=7c8d76f49d20548722947b53a2d48e623a0a5cf84735988077558f2b&holder_ctry=CN&id_token=VjEAAIW6OzTkxtXGzL/zQEnP9nJccVLXFDq0O7VrgLHMlVDVdmyMuNJwX5WNi0X2xZ/VF3fReKIxkUiGi9jmi/vodhYd1NMEXufWarMHDcpbLJSOgG5bkDXu3nIwoSAsSREILf%2Bp&identifier_flag=0&is_mac=0&lang=zh-Hans&launch_id=800503632&mlanguage=zh_cn&nqe_score=83&overseas_channel=0&platform=iOS&project_id=ECFAAF&sid=session.1778810839309156255777&t=1778810873&teenager=0&tz=Asia/Shanghai&uis=light&version=9.28.1",
+"x-raw-ptr": "0",
+"accept": "/*",
+"referer": "https://app.xhs.cn/",
+"cookie": "acw_tc=0ad62dd817788108358143222e00ed740f8ca1407576a008ac0d72bbd46fe6"
+}
+联系方式：@some1899
