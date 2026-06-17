@@ -1,0 +1,1050 @@
+在TikTok账号注册、登录及安全验证中，验证码系统是最关键的身份验证环节。对于开发者和企业而言，搭建一套稳定可靠的验证码系统，不仅可以保证用户体验，还能有效防止恶意注册和风控风险。本章将结合实战经验，详细讲解验证码接口对接流程、常见异常处理方法以及开发优化策略，帮助开发者快速构建可用的验证码解决方案。
+
+一、TikTok验证码系统概述
+
+TikTok验证码系统主要通过短信（SMS）或电子邮件（Email）发送一次性验证码（OTP，One-Time Password）给用户，用于验证其身份。整个流程通常包括以下环节：
+
+用户提交手机号或邮箱
+系统生成验证码
+验证码通过短信或邮件发送给用户
+用户输入验证码进行验证
+系统确认验证码有效性，并允许用户完成操作
+
+在实际开发中，最常见的验证码场景包括：
+
+注册新账号
+用户登录
+修改密码或找回密码
+重要操作确认（如绑定手机号、修改邮箱）
+二、接口对接流程
+
+开发者在TikTok或第三方系统中对接验证码接口，通常遵循以下步骤：
+
+获取接口授权
+申请API Key和Secret
+配置回调URL或Webhook（如支持异步通知）
+确保应用有权限调用验证码发送和验证接口。
+
+生成验证码
+验证码通常为随机数字或字母组合。常见策略：
+
+长度：4-6位
+组合方式：纯数字或数字+字母
+有效期：一般为5-15分钟
+
+生成示例（Python）：
+
+import random
+
+def generate_code(length=6):
+return ''.join([str(random.randint(0, 9)) for _ in range(length)])
+
+code = generate_code()
+print(code)
+3. 调用发送接口
+
+通过HTTP请求将验证码发送给用户。接口一般支持POST请求。
+
+示例请求：
+
+import requests
+
+url = "https://api.tiktok.com/sms/send"
+payload = {
+"phone_number": "+11234567890",
+"country_code": "1",
+"message": f"Your TikTok verification code is {code}"
+}
+headers = {
+"Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.json())
+
+请求成功后，系统会返回发送状态和唯一请求ID，方便后续查询或重发。
+
+验证用户输入
+用户收到验证码后，在客户端输入并提交到验证接口。
+
+验证逻辑示例：
+
+verify_payload = {
+"phone_number": "+11234567890",
+"code": code
+}
+response = requests.post("https://api.tiktok.com/sms/verify", json=verify_payload, headers=headers)
+result = response.json()
+
+if result["status"] == "success":
+print("Verification passed")
+else:
+print("Verification failed")
+5. 记录日志
+
+所有发送与验证记录应保存在数据库或日志系统中，方便统计和异常排查。
+
+三、常见异常与处理方法
+
+在开发和运营过程中，验证码接口可能出现多种异常情况，主要包括以下几类：
+
+验证码收不到
+原因可能包括：
+
+手机号格式错误或国家区号不匹配
+用户网络异常或短信被拦截
+短信服务商延迟或阻塞
+
+处理方法：
+
+校验手机号格式，确保国际区号正确
+检查短信发送返回状态码
+支持重发机制，避免频繁请求
+2. 验证失败
+
+常见原因：
+
+用户输入错误
+验证码过期
+多次请求导致旧验证码失效
+
+解决方案：
+
+设置有效期检查
+仅保留最新生成的验证码
+提供提示信息，引导用户重新获取验证码
+3. 请求频率受限
+
+部分短信服务商或TikTok风控系统会限制接口调用频率。
+
+表现：
+
+返回429或类似错误码
+短时间内无法发送验证码
+
+处理方法：
+
+对接口请求进行限流（例如1分钟内不超过3次）
+引入队列机制，避免并发峰值
+实现指数退避重试策略
+4. 接口异常或超时
+
+网络或服务器故障可能导致请求失败。
+
+处理方法：
+
+设置请求超时和异常捕获
+自动重试（可限制重试次数）
+记录错误日志，用于问题排查
+四、企业级优化策略
+
+为了保证验证码系统的高可用性和稳定性，建议从以下几个方面优化：
+
+多通道发送
+接入多家短信供应商，主通道异常时自动切换备用通道，提高到达率。
+
+智能重发机制
+验证码未送达时，可自动触发重发请求，但需控制重发间隔，避免触发风控。
+
+日志监控与报警
+记录每次发送和验证状态，监控失败率和异常频次，及时发出报警通知。
+
+风控策略结合
+结合IP、设备、请求频率等信息判断风险操作，避免滥用验证码接口。
+
+数据持久化与统计
+保存验证码发送、验证及重发记录，支持后续分析用户行为、系统稳定性和短信到达率。
+
+五、总结
+
+TikTok验证码系统开发不仅涉及接口对接，还包括异常处理、重发机制、日志管理及风控策略。通过合理设计验证码生成规则、调用接口流程以及异常处理逻辑，可以大幅提升用户体验和系统稳定性。企业级应用应关注多通道发送、请求限流、智能重发以及日志监控，确保验证码系统在高并发、跨境运营和复杂网络环境下依然可靠。掌握这些开发与运维技巧，开发者即可快速构建一套安全、稳定、高效的TikTok验证码解决方案，为用户注册、登录和敏感操作提供坚实保障。
+请求示例：
+{
+"code": 0,
+"data": {
+"kol_status": 1,
+"entrance": 0,
+"priority_region": null,
+"protocol_popups_content": null,
+"no_product_status": 3,
+"shop_center_schema": "",
+"showcase_schema": "",
+"showcase_independent_page_schema": "aweme://ec/showcase?ab_params=showcase_product_list_switch%2Cshop_card_optimize_us%2Cshowcase_dynamic_card%2Cshop_card_optimize_in_showcase%2Croma_schema_group_shop_dynamic_pages%2Cproduct_protocol_version%2Crecommend_v2_product_protocol_version%2Cstore_showcase_double_column_product_card_loose%2Cenable_show_follow_list%2Cec_showcase_skeleton%2Cshowcase_show_sold_num%2Cec_showcase_new_follow_btn%2Coffline_creator_caching%2Cenable_window_search_mix\u0026author_id=7356434712338056238\u0026filter_tab=1\u0026hide_nav_bar=1\u0026hide_status_bar=0\u0026loading_bg_color_dark=121212FF\u0026trans_status_bar=1\u0026url=https%3A%2F%2Flf16-gecko-source.tiktokcdn.com%2Fobj%2Fbyte-gurd-source-sg%2Ftiktok%2Ffe%2Flive%2Ftiktok_live_ecommerce_seller_showcase%2Fpages%2Fseller-showcase-page.js\u0026use_new_container=1",
+"banned_time": 0,
+"products": {
+"has_more": true,
+"next_scroll_param": "11",
+"use_kol_for_recommend": false,
+"req_id": "7634467830070706463",
+"product_list_map": {
+"Showcase.Profile_Page_Showcase_Feeds.Common": {
+"product_list": [
+{
+"product_id": "1729718227415699653",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221729718227415699653%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22Hq1ff%2FbLD9lFYhdbRDbp7rHEmyiCDsgOKBSms6krmOgw7mQo4Cb16QWLKigvC8DG%2F3O1sAsqn6Ox8Qz8oX%2F3Q843tjmAM1FMP9N3Fg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22XlnjUeQ4I568Qcyz4GvB2pSQEBbZ8IJzCbQ4JLLD8dJDO5mf%2FIvgKJLCMBwIHxVbQfLOardWfH%2FUJdarOft6Hhum6O0TPeRWjhXikA%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221729718227415699653%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 667,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/5341481be9024750978b1ced9a53a045",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/5341481be9024750978b1ced9a53a045~tplv-fhlh96nyum-crop-webp:500:667.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 0.75
+}
+},
+"title": {
+"title": "Blue MoonStone Ring, More Jewelry in Live Room, Blue Moonstone Rings, Blue Moonstone Jewelry, Moonstone Heart shape Ring"
+},
+"price": {
+"sku_id": "1729718227415765189",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "39.99",
+"sale_price_format": "39.99",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "39",
+"sale_price_decimal_part_format": "99",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1729718227415765189"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"Hq1ff/bLD9lFYhdbRDbp7rHEmyiCDsgOKBSms6krmOgw7mQo4Cb16QWLKigvC8DG/3O1sAsqn6Ox8Qz8oX/3Q843tjmAM1FMP9N3Fg","mck":"XlnjUeQ4I568Qcyz4GvB2pSQEBbZ8IJzCbQ4JLLD8dJDO5mf/IvgKJLCMBwIHxVbQfLOardWfH/UJdarOft6Hhum6O0TPeRWjhXikA","v":1}",
+"tag_list": [
+{
+"tag_type": 301,
+"text": "10 sold"
+}
+],
+"log_extra": "{"cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"sku_id":"1729718227415765189","seller_sku_id":"1729718227415765189","platform_sku_id":"","rating_strategy":{"review_cnt":"3"},"is_platform_product":0,"sale_modes":"[]","platform_seller_id":"","seller_shop_id":"7495527153686448325","platform_shop_id":"","title_strategy":{"title_tactics_type":0},"sold_count_strategy":{"volume_type":"sold","volume":"10"},"seller_product_id":"1729718227415699653","platform_product_id":"","seller_seller_id":"7495527153686448325"}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399017084010030000001e1583b3c206133c"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399017084010030000001e1583b3c206133c"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:13,window_product:21","score":14.66147713205843,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":0,\"recall_reason\":\"window_hive_inverted:13,window_product:21\",\"score\":14.66147713205843,\"rank_score\":14.66147713205843,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":7.66496,\"_DFO:is_feedback_max\":0.06112,\"_DFO:negative_review_max\":0.00371,\"_DFO:real_shipping_fee_mean\":5.48935,\"_DFO:review_based_negative_review_max\":0.04954,\"_MTL:product_click\":0.15546,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.39672},\"VT_DEBUG\":{\"pctr\":0.15546,\"pcvr\":0.00005,\"price\":39.99,\"pgmv\":0.00113,\"combine_score\":0.17837,\"sort_boost_weight\":1.0,\"root\":14.66148},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":22,\"recall_idx\":13,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:13,window_product_recall:21,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":10,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":10000,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":10,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":1,\"sess_refresh_idx\":1,\"rerank_idx\":0,\"before_rerank_idx\":0,\"product_id\":1729718227415699653,\"hybrid_index\":0,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"964232\",\"leaf\":\"973192\",\"rec_ctg_lv4\":\"97319200\"},\"ver_tag\":\"8935671091657973351\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"1:0,4:0,0:0,2:0,3:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1729718227415699653,\"cover_sim_id\":1729718227415699653,\"spu_sim_id\":1729718227415699653,\"prod_sim_id\":1729468307236557636},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":10,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\",\"product_invert_num\":{\"exch_rt\":0.0,\"rc_rs_rt\":0.0,\"rs_fs_rt\":0.0,\"t10_rt\":0.0,\"t50_rt\":0.0,\"t200_rt\":0.0,\"ivt_val_vad\":0.0},\"mix\":{\"m\":{\"_MTL\":\"r1241874\"}}}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1730231137690751173",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221730231137690751173%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22Ql29kUXz6I8uiZantq%2BYfxnmFdK6jdrw2z3CFIiuv0T4kxBe1KnOQmgeScg3e0EOScHc6Gu6Xpx3O30WChDvUaFxUmLo1iITjoLsUQ%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22rAsqhSf9%2BjQEFDHYGYwruflUZ4iZxmjieUAisXfgDmoF3NBPkbjvSo%2BVIOwDEWFJr7sx9TBlnSXOACjTD8EDucXxjy%2B%2BhkPTecLeaQ%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221730231137690751173%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/ceb91449f684428a8d8335f2e2e396cd",
+"url_list": [
+"https://p19-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/ceb91449f684428a8d8335f2e2e396cd~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "Natural Larimar Ring, More Jewelry in Live Room, Larimar Rings, Larimar Gift, Natural Gemstone Rings, Natural Crystal Rings, Gemstone Jewelry for Women, Ring Gift for Birthday Anniversary"
+},
+"price": {
+"sku_id": "1730231137690816709",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "29.99",
+"sale_price_format": "29.99",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "29",
+"sale_price_decimal_part_format": "99",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1730231137690816709"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"Ql29kUXz6I8uiZantq+YfxnmFdK6jdrw2z3CFIiuv0T4kxBe1KnOQmgeScg3e0EOScHc6Gu6Xpx3O30WChDvUaFxUmLo1iITjoLsUQ","mck":"rAsqhSf9+jQEFDHYGYwruflUZ4iZxmjieUAisXfgDmoF3NBPkbjvSo+VIOwDEWFJr7sx9TBlnSXOACjTD8EDucXxjy++hkPTecLeaQ","v":1}",
+"tag_list": [
+{
+"tag_type": 301,
+"text": "3 sold"
+}
+],
+"log_extra": "{"sale_modes":"[]","seller_product_id":"1730231137690751173","platform_seller_id":"","platform_shop_id":"","sku_id":"1730231137690816709","seller_sku_id":"1730231137690816709","platform_sku_id":"","is_platform_product":0,"seller_seller_id":"7495527153686448325","seller_shop_id":"7495527153686448325","title_strategy":{"title_tactics_type":0},"sold_count_strategy":{"volume_type":"sold","volume":"3"},"cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"platform_product_id":""}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399017084010030000006398ce7de5968413"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399017084010030000006398ce7de5968413"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:19,window_product:14","score":0.9640943330108123,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":1,\"recall_reason\":\"window_hive_inverted:19,window_product:14\",\"score\":0.9640943330108123,\"rank_score\":0.9640943330108123,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":9.08825,\"_DFO:is_feedback_max\":0.01831,\"_DFO:negative_review_max\":0.0009,\"_DFO:real_shipping_fee_mean\":5.4032,\"_DFO:review_based_negative_review_max\":0.02005,\"_MTL:product_click\":0.12231,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.40631},\"VT_DEBUG\":{\"pctr\":0.12231,\"pcvr\":0.00005,\"price\":29.99,\"pgmv\":0.00113,\"combine_score\":0.14518,\"sort_boost_weight\":1.0,\"root\":0.96409},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_product\",\"merge_idx\":27,\"recall_idx\":14,\"all_recall_name\":\"window_product_recall:14,ttmall_window_hive_inverted_recall:19,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":3,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":7181,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":3,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"discover_ratio\":\"1.0000,1.0000,1.0000,1.0000,0.0000\",\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":2,\"sess_refresh_idx\":1,\"rerank_idx\":1,\"before_rerank_idx\":1,\"product_id\":1730231137690751173,\"hybrid_index\":1,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"955400\",\"leaf\":\"959368\",\"rec_ctg_lv4\":\"97319200\"},\"ver_tag\":\"8935565534246739815\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"3:0,0:0,4:0,1:0,2:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1730231137690751173,\"cover_sim_id\":1730231137690751173,\"spu_sim_id\":1730231137690751173,\"prod_sim_id\":1732032773937926994},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":3,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1732125325213274309",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221732125325213274309%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%221VNFyRmenZyeSLQAxMG%2FnK7X3JUJifzXUbOzLLJk7V%2BiUokWhRKQVKBaAbyL3fRPcdM06dUbNIbneftw50UjVoZ3YMvQwOX1YUGwlg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22%2BWeWyhyRU7c5yR3UQynnpMPT8cBn3bJ2wHkwfVE%2FXqw6Ls1YocNl31u0KuBTz%2FdamOzajF9b5hfmXWsSJXS18Q5Wng3Xssp%2F3C3BGQ%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221732125325213274309%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/08c6815c07404baa8850e2de9c56466a",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/08c6815c07404baa8850e2de9c56466a~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "Natural Crystal Necklace,Crystal Beeds Necklace, Tiger Eye Necklace, Aquamarine Necklace, Amethyst Necklace, Peridot Necklace, Citrine Necklace, Rose Quarts Necklace, Lapis Lazuli Necklace, Tourmaline Necklace"
+},
+"price": {
+"sku_id": "1732125369160536261",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "18",
+"sale_price_format": "18.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "18",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1732125369160536261",
+"1732125369160601797",
+"1732125369160667333",
+"1732125369160732869",
+"1732125369160798405",
+"1732125369160863941",
+"1732125369160929477"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"1VNFyRmenZyeSLQAxMG/nK7X3JUJifzXUbOzLLJk7V+iUokWhRKQVKBaAbyL3fRPcdM06dUbNIbneftw50UjVoZ3YMvQwOX1YUGwlg","mck":"+WeWyhyRU7c5yR3UQynnpMPT8cBn3bJ2wHkwfVE/Xqw6Ls1YocNl31u0KuBTz/damOzajF9b5hfmXWsSJXS18Q5Wng3Xssp/3C3BGQ","v":1}",
+"log_extra": "{"sale_modes":"[]","platform_seller_id":"","sku_id":"1732125369160536261","seller_sku_id":"1732125369160536261","is_platform_product":0,"platform_product_id":"","seller_seller_id":"7495527153686448325","seller_shop_id":"7495527153686448325","platform_shop_id":"","platform_sku_id":"","cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"title_strategy":{"title_tactics_type":0},"seller_product_id":"1732125325213274309"}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399018084010030000000f06dc597c275afe"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399018084010030000000f06dc597c275afe"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:51,window_product:52","score":0.8418916680982054,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":2,\"recall_reason\":\"window_hive_inverted:51,window_product:52\",\"score\":0.8418916680982054,\"rank_score\":0.8418916680982054,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":8.20361,\"_DFO:is_feedback_max\":0.02412,\"_DFO:negative_review_max\":0.00106,\"_DFO:real_shipping_fee_mean\":5.04212,\"_DFO:review_based_negative_review_max\":0.01715,\"_MTL:product_click\":0.11556,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.43337},\"VT_DEBUG\":{\"pctr\":0.11556,\"pcvr\":0.00005,\"price\":18.0,\"pgmv\":0.00113,\"combine_score\":0.13842,\"sort_boost_weight\":1.0,\"root\":0.84189},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_product\",\"merge_idx\":61,\"recall_idx\":52,\"all_recall_name\":\"window_product_recall:52,ttmall_window_hive_inverted_recall:51,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":0,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":1313,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":4},\"sub_ord_cnt\":0,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":3,\"sess_refresh_idx\":1,\"rerank_idx\":2,\"before_rerank_idx\":2,\"product_id\":1732125325213274309,\"hybrid_index\":2,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"955400\",\"leaf\":\"959240\",\"rec_ctg_lv4\":\"95924000\"},\"ver_tag\":\"8647335162389995367\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"3:0,2:0,0:0,4:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1732125325213274309,\"cover_sim_id\":1732125325213274309,\"spu_sim_id\":1732125325213274309,\"prod_sim_id\":1732057610405449828},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":0},\"sales\":0,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1729719867636420805",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221729719867636420805%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22Ok3ld1B9R8x8Fog5TKL4WVQ1eR9vXpRxQQ%2BTS%2B5djWaQDFPoy0dEtIdjYRxrV48tlyj4agzcXeLB829CH%2BQcL7txZ%2BE%2BqqbrN3RkZg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22QIcvNRUZJ%2B9JQoX0MKwMrtF554vg3Q3%2BTxlPFqXcrJDMDw5YcXwDBtEARnbFRAVX5CJm6shm1O0TkkQLyzOxbudEZnHRqMPUTAexaw%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221729719867636420805%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/86854bbe47e443e6afe416587cc964d9",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/86854bbe47e443e6afe416587cc964d9~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "Natural Larimar Necklace, More Jewelry in Live Room, Larimar Gemstone Pendant, Larimar Jewelry for Woman, Carved Larimar Necklace"
+},
+"price": {
+"sku_id": "1729719867636486341",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "450",
+"sale_price_format": "450.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "450",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1729719867636486341"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"Ok3ld1B9R8x8Fog5TKL4WVQ1eR9vXpRxQQ+TS+5djWaQDFPoy0dEtIdjYRxrV48tlyj4agzcXeLB829CH+QcL7txZ+E+qqbrN3RkZg","mck":"QIcvNRUZJ+9JQoX0MKwMrtF554vg3Q3+TxlPFqXcrJDMDw5YcXwDBtEARnbFRAVX5CJm6shm1O0TkkQLyzOxbudEZnHRqMPUTAexaw","v":1}",
+"placement_labels": [
+{
+"placement": 0,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"delivery_tag":"free_shipping","placement":"DEFAULT_SPLIT_ONE","has_icon":"true","promotion_id":"-999","is_free_shipping":"1","label_type":"PRODUCT_FREE_SHIPPING","activity_name":"8","ranking":"1"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+},
+{
+"placement": 3,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"delivery_tag":"free_shipping","ranking":"1","activity_name":"8","is_free_shipping":"1","label_type":"PRODUCT_FREE_SHIPPING","has_icon":"true","promotion_id":"-999","placement":"FREE_SHIPPING"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+}
+],
+"log_extra": "{"is_platform_product":0,"seller_shop_id":"7495527153686448325","platform_shop_id":"","sku_id":"1729719867636486341","platform_sku_id":"","cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"title_strategy":{"title_tactics_type":0},"sale_modes":"[]","seller_product_id":"1729719867636420805","platform_product_id":"","seller_seller_id":"7495527153686448325","platform_seller_id":"","seller_sku_id":"1729719867636486341"}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000298193bcebe93728"
+},
+"chain_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000298193bcebe93728"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:29,window_product:12","score":0.18878178110116156,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":3,\"recall_reason\":\"window_hive_inverted:29,window_product:12\",\"score\":0.18878178110116156,\"rank_score\":0.18878178110116156,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":8.84435,\"_DFO:is_feedback_max\":0.0377,\"_DFO:negative_review_max\":0.00129,\"_DFO:real_shipping_fee_mean\":0.05471,\"_DFO:review_based_negative_review_max\":0.02739,\"_MTL:product_click\":0.10177,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.43254},\"VT_DEBUG\":{\"pctr\":0.10177,\"pcvr\":0.00005,\"price\":450.0,\"pgmv\":0.00113,\"combine_score\":0.1246,\"sort_boost_weight\":1.0,\"root\":0.18878},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_product\",\"merge_idx\":23,\"recall_idx\":12,\"all_recall_name\":\"window_product_recall:12,ttmall_window_hive_inverted_recall:29,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":0,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":1247,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":0,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":4,\"sess_refresh_idx\":1,\"rerank_idx\":3,\"before_rerank_idx\":3,\"product_id\":1729719867636420805,\"hybrid_index\":3,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"955400\",\"leaf\":\"959240\",\"rec_ctg_lv4\":\"60528000\"},\"ver_tag\":\"8935565536394223207\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":1,\"group_free_ship\":\"4:1,2:1,0:1\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1729719867636420805,\"cover_sim_id\":1729719867636420805,\"spu_sim_id\":1729719867636420805,\"prod_sim_id\":1729562329701454473},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":0,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1730254496356864197",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221730254496356864197%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%229pD45ByRYNC2tyJ8T2sO3H7kmlo60sMW2B2vUjebQ2kATqdPl6NZbJq1ystPTr6dNRwlrhOrtALarEUXtbYnY4463Z42OWvMxZCwvg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22Bi6aZTnxpRMSYZCkS0Qbw%2F2olYDr09kddkZ8bh9HReX9ay%2FGy2gXLgMp5%2Bw1XRakWe9SiyrVfLwg6byl9UZCJRFK%2FmYWhMHWtYpUkg%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221730254496356864197%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/56b7b479533b442fb48ca383920e6e4e",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/56b7b479533b442fb48ca383920e6e4e~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "High Quality Natural Aquamarine Bangle, Pre-orders Only, Please Consult Color and Size in Live Stream, Natural Aquamarine Bracelet"
+},
+"price": {
+"sku_id": "1730254496356929733",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "200",
+"sale_price_format": "200.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "200",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1730254496356929733"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"9pD45ByRYNC2tyJ8T2sO3H7kmlo60sMW2B2vUjebQ2kATqdPl6NZbJq1ystPTr6dNRwlrhOrtALarEUXtbYnY4463Z42OWvMxZCwvg","mck":"Bi6aZTnxpRMSYZCkS0Qbw/2olYDr09kddkZ8bh9HReX9ay/Gy2gXLgMp5+w1XRakWe9SiyrVfLwg6byl9UZCJRFK/mYWhMHWtYpUkg","v":1}",
+"placement_labels": [
+{
+"placement": 0,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"is_free_shipping":"1","placement":"DEFAULT_SPLIT_ONE","has_icon":"true","activity_name":"8","promotion_id":"-999","delivery_tag":"free_shipping","ranking":"1","label_type":"PRODUCT_FREE_SHIPPING"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+},
+{
+"placement": 3,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"is_free_shipping":"1","placement":"FREE_SHIPPING","has_icon":"true","promotion_id":"-999","delivery_tag":"free_shipping","ranking":"1","label_type":"PRODUCT_FREE_SHIPPING","activity_name":"8"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+}
+],
+"tag_list": [
+{
+"tag_type": 301,
+"text": "2 sold"
+}
+],
+"log_extra": "{"title_strategy":{"title_tactics_type":0},"seller_product_id":"1730254496356864197","seller_seller_id":"7495527153686448325","platform_seller_id":"","seller_shop_id":"7495527153686448325","sku_id":"1730254496356929733","platform_sku_id":"","cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"is_platform_product":0,"sale_modes":"[]","platform_product_id":"","platform_shop_id":"","seller_sku_id":"1730254496356929733","sold_count_strategy":{"volume_type":"sold","volume":"2"}}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399018084010030000002615517011450242"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399018084010030000002615517011450242"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:61,window_product:18","score":0.12616110473287148,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":4,\"recall_reason\":\"window_hive_inverted:61,window_product:18\",\"score\":0.12616110473287148,\"rank_score\":0.12616110473287148,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":7.75994,\"_DFO:is_feedback_max\":0.05527,\"_DFO:negative_review_max\":0.00095,\"_DFO:real_shipping_fee_mean\":1.5692,\"_DFO:review_based_negative_review_max\":0.01927,\"_MTL:product_click\":0.10035,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.42471},\"VT_DEBUG\":{\"pctr\":0.10035,\"pcvr\":0.00005,\"price\":200.0,\"pgmv\":0.00113,\"combine_score\":0.12318,\"sort_boost_weight\":1.0,\"root\":0.12616},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_product\",\"merge_idx\":33,\"recall_idx\":18,\"all_recall_name\":\"window_product_recall:18,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":2,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":10000,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":2,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":5,\"sess_refresh_idx\":1,\"rerank_idx\":4,\"before_rerank_idx\":4,\"product_id\":1730254496356864197,\"hybrid_index\":4,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"605248\",\"lv2\":\"905608\",\"leaf\":\"605274\",\"rec_ctg_lv4\":\"97332000\"},\"ver_tag\":\"8935565538541707111\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":1,\"group_free_ship\":\"0:1,4:1,1:1,2:1,3:1\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1730254496356864197,\"cover_sim_id\":1730254496356864197,\"spu_sim_id\":1730254496356864197,\"prod_sim_id\":1729565667898528305},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":2,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1730259218879910085",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221730259218879910085%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22v7GdrBo%2FLs%2FlkpwKSp2bfjmYJT4IXUyU2bY9ZSOGcgeFgzEJtbxTF1MFglvFZWoYkie4UNRUWMuMCE25CnFNcSQU9Gz%2B7MG1DIDN2g%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22qYLzsDguVKrSW%2Bk%2Fa%2FeSJNKjtgjaAPg1X3qVGWP3QtAONjNXrSknZsfkoxHiNo4FfOJZU8wXihujdCetNywb%2FWB7urYfRmRB9veFyw%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221730259218879910085%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/954b91c9a0904780bd26c40845ff0030",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/954b91c9a0904780bd26c40845ff0030~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "High Quality Natural Green Rutilated Quartz Bangle,Please Consult Color and Size in Live Stream, Natural Green Rutilated Quartz Bracelet"
+},
+"price": {
+"sku_id": "1730259218879975621",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "100",
+"sale_price_format": "100.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "100",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1730259218879975621"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"v7GdrBo/Ls/lkpwKSp2bfjmYJT4IXUyU2bY9ZSOGcgeFgzEJtbxTF1MFglvFZWoYkie4UNRUWMuMCE25CnFNcSQU9Gz+7MG1DIDN2g","mck":"qYLzsDguVKrSW+k/a/eSJNKjtgjaAPg1X3qVGWP3QtAONjNXrSknZsfkoxHiNo4FfOJZU8wXihujdCetNywb/WB7urYfRmRB9veFyw","v":1}",
+"placement_labels": [
+{
+"placement": 3,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"label_type":"PRODUCT_FREE_SHIPPING","activity_name":"8","has_icon":"true","promotion_id":"-999","delivery_tag":"free_shipping","placement":"FREE_SHIPPING","ranking":"1","is_free_shipping":"1"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+},
+{
+"placement": 0,
+"labels": [
+{
+"id": "8",
+"type": 8,
+"text": "Free shipping",
+"icon": {
+"light_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+},
+"dark_icon": {
+"height": 800,
+"width": 800,
+"mimetype": "",
+"uri": "tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png",
+"url_list": [
+"https://p16-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299",
+"https://p19-oec-general.ttcdn-us.com/tos-maliva-i-5i1jvf5urr-us/free_shipping_strong_dark.png~tplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast8\u0026from=3454340299"
+]
+}
+},
+"default_style": 11,
+"status": 0,
+"claimed_status": 0,
+"is_show_icon": true,
+"da_info": "{"delivery_tag":"free_shipping","activity_name":"8","has_icon":"true","promotion_id":"-999","is_free_shipping":"1","placement":"DEFAULT_SPLIT_ONE","ranking":"1","label_type":"PRODUCT_FREE_SHIPPING"}",
+"feature": [
+{
+"property_name": "split_free_shipping",
+"property_value": "1"
+}
+]
+}
+]
+}
+],
+"tag_list": [
+{
+"tag_type": 301,
+"text": "3 sold"
+}
+],
+"log_extra": "{"platform_shop_id":"","seller_sku_id":"1730259218879975621","is_platform_product":0,"seller_product_id":"1730259218879910085","platform_product_id":"","seller_seller_id":"7495527153686448325","platform_seller_id":"","seller_shop_id":"7495527153686448325","sale_modes":"[]","sku_id":"1730259218879975621","platform_sku_id":"","sold_count_strategy":{"volume_type":"sold","volume":"3"},"title_strategy":{"title_tactics_type":0},"cover_strategy":{"image_tactics_type":0,"is_smart_crop":false}}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000c53b9d7835d804e2"
+},
+"chain_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000c53b9d7835d804e2"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:28,window_product:54","score":0.07995390035818749,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":5,\"recall_reason\":\"window_hive_inverted:28,window_product:54\",\"score\":0.07995390035818749,\"rank_score\":0.07995390035818749,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":7.79176,\"_DFO:is_feedback_max\":0.02826,\"_DFO:negative_review_max\":0.00092,\"_DFO:real_shipping_fee_mean\":4.24372,\"_DFO:review_based_negative_review_max\":0.01628,\"_MTL:product_click\":0.09877,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.41654},\"VT_DEBUG\":{\"pctr\":0.09877,\"pcvr\":0.00005,\"price\":100.0,\"pgmv\":0.00113,\"combine_score\":0.1216,\"sort_boost_weight\":1.0,\"root\":0.07995},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":42,\"recall_idx\":28,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:28,window_product_recall:54,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":3,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":4152,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":3,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":6,\"sess_refresh_idx\":1,\"rerank_idx\":5,\"before_rerank_idx\":5,\"product_id\":1730259218879910085,\"hybrid_index\":5,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"605248\",\"lv2\":\"905608\",\"leaf\":\"605274\",\"rec_ctg_lv4\":\"97140000\"},\"ver_tag\":\"8935565538541706855\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":1,\"group_free_ship\":\"4:1,0:1,3:1,2:1\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1730259218879910085,\"cover_sim_id\":1730259218879910085,\"spu_sim_id\":1730259218879910085,\"prod_sim_id\":1729565667898528305},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":3,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1729500711227134149",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221729500711227134149%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22LNPp3AGagR%2B3hMfP5eZ54XQG9KEpdPYqmXrX8kJSzWjam7Tcqn%2BrLuVoSCuVqWejkKkaPp1zCYTLqpg2uVeVgaLOcDdTJEk2uj%2B%2Bzg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22E1pXqTJsv7SBbqX50AbkKHfxt2PwgdulOgTCBwduN0gBRMKavWp0QYVBVYzb1X5IGSKuDpA1WEmdxReqHsMR806ykqCdAxPfUc8BlQ%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221729500711227134149%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/2e183725e0f54b999d9feb17a6283cba",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/2e183725e0f54b999d9feb17a6283cba~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "Ocean Jasper Pendant, Crystal Pendant,Crystal Gift, You can Choose in our Livee Streamm Room, Or Ship Randomly"
+},
+"price": {
+"sku_id": "1729500711227199685",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "4",
+"sale_price_format": "4.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "4",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1729500711227199685"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"LNPp3AGagR+3hMfP5eZ54XQG9KEpdPYqmXrX8kJSzWjam7Tcqn+rLuVoSCuVqWejkKkaPp1zCYTLqpg2uVeVgaLOcDdTJEk2uj++zg","mck":"E1pXqTJsv7SBbqX50AbkKHfxt2PwgdulOgTCBwduN0gBRMKavWp0QYVBVYzb1X5IGSKuDpA1WEmdxReqHsMR806ykqCdAxPfUc8BlQ","v":1}",
+"tag_list": [
+{
+"tag_type": 301,
+"text": "126 sold"
+}
+],
+"log_extra": "{"platform_sku_id":"","title_strategy":{"title_tactics_type":0},"cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"sale_modes":"[]","platform_seller_id":"","seller_shop_id":"7495527153686448325","rating_strategy":{"review_cnt":"1"},"is_platform_product":0,"seller_product_id":"1729500711227134149","seller_sku_id":"1729500711227199685","sold_count_strategy":{"volume_type":"sold","volume":"126"},"platform_product_id":"","platform_shop_id":"","sku_id":"1729500711227199685","seller_seller_id":"7495527153686448325"}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399017084010030000004a1d34d2ca4fd106"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399017084010030000004a1d34d2ca4fd106"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:26,window_product:40","score":0.07437224352530397,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":6,\"recall_reason\":\"window_hive_inverted:26,window_product:40\",\"score\":0.07437224352530397,\"rank_score\":0.07437224352530397,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":7.72844,\"_DFO:is_feedback_max\":0.02294,\"_DFO:negative_review_max\":0.00081,\"_DFO:real_shipping_fee_mean\":2.63095,\"_DFO:review_based_negative_review_max\":0.00638,\"_MTL:product_click\":0.09756,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.42043},\"VT_DEBUG\":{\"pctr\":0.09756,\"pcvr\":0.00005,\"price\":4.0,\"pgmv\":0.00113,\"combine_score\":0.12039,\"sort_boost_weight\":1.0,\"root\":0.07437},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":38,\"recall_idx\":26,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:26,window_product_recall:40,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":126,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":9286,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":126,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":7,\"sess_refresh_idx\":1,\"rerank_idx\":6,\"before_rerank_idx\":6,\"product_id\":1729500711227134149,\"hybrid_index\":6,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"955400\",\"leaf\":\"959240\",\"rec_ctg_lv4\":\"95924000\"},\"ver_tag\":\"8935565537467965031\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"2:0,1:0,3:0,0:0,4:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1729500711227134149,\"cover_sim_id\":1729500711227134149,\"spu_sim_id\":1729500711227134149,\"prod_sim_id\":1729492619800252466},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":126,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1729503638273691845",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221729503638273691845%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22j%2FtjSnPdKX1ss05Ptgzz6ZqcZ8owukzuft3ZTN6j9U9UAtk%2B0WRTx4jgOMMxEorxEz7Xa0FUxTdC25r0D%2Fb6JwQMvm3jQVWa72%2FjUQ%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22K2NzVay%2FGlxgr2AZUW476oXmMIaQde%2BSBRItmHK5kBM5znL5NCAYYc7qzBCX65k%2BQFEGXuT4X%2FFuKadmx%2BB4pr71FtpPxcvdUTa%2F5Q%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221729503638273691845%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 667,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/cc13a606dfac4343b4276ef156ca7c2b",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/cc13a606dfac4343b4276ef156ca7c2b~tplv-fhlh96nyum-crop-webp:500:667.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 0.75
+}
+},
+"title": {
+"title": "CT-Green Rose Agate Pendant, Crystal Pendant, Crystal Gift, You can Choose Color in our Livee Streamm Room, Or Ship Randomly"
+},
+"price": {
+"sku_id": "1729503638273757381",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "15",
+"sale_price_format": "15.00",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "15",
+"sale_price_decimal_part_format": "00",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1729503638273757381"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"j/tjSnPdKX1ss05Ptgzz6ZqcZ8owukzuft3ZTN6j9U9UAtk+0WRTx4jgOMMxEorxEz7Xa0FUxTdC25r0D/b6JwQMvm3jQVWa72/jUQ","mck":"K2NzVay/Glxgr2AZUW476oXmMIaQde+SBRItmHK5kBM5znL5NCAYYc7qzBCX65k+QFEGXuT4X/FuKadmx+B4pr71FtpPxcvdUTa/5Q","v":1}",
+"tag_list": [
+{
+"tag_type": 301,
+"text": "9 sold"
+}
+],
+"log_extra": "{"seller_shop_id":"7495527153686448325","seller_sku_id":"1729503638273757381","platform_sku_id":"","title_strategy":{"title_tactics_type":0},"cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"is_platform_product":0,"seller_seller_id":"7495527153686448325","platform_seller_id":"","platform_shop_id":"","sku_id":"1729503638273757381","sold_count_strategy":{"volume_type":"sold","volume":"9"},"sale_modes":"[]","seller_product_id":"1729503638273691845","platform_product_id":""}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000b9ef4688836dc801"
+},
+"chain_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000b9ef4688836dc801"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:1,window_product:59","score":0.0662646279930491,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":7,\"recall_reason\":\"window_hive_inverted:1,window_product:59\",\"score\":0.0662646279930491,\"rank_score\":0.0662646279930491,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":8.52703,\"_DFO:is_feedback_max\":0.00938,\"_DFO:negative_review_max\":0.00072,\"_DFO:real_shipping_fee_mean\":5.23279,\"_DFO:review_based_negative_review_max\":0.05251,\"_MTL:product_click\":0.09586,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.42655},\"VT_DEBUG\":{\"pctr\":0.09586,\"pcvr\":0.00005,\"price\":15.0,\"pgmv\":0.00113,\"combine_score\":0.11868,\"sort_boost_weight\":1.0,\"root\":0.06626},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":2,\"recall_idx\":1,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:1,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":9,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":5348,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":9,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":8,\"sess_refresh_idx\":1,\"rerank_idx\":7,\"before_rerank_idx\":7,\"product_id\":1729503638273691845,\"hybrid_index\":7,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"963848\",\"leaf\":\"958984\",\"rec_ctg_lv4\":\"90740000\"},\"ver_tag\":\"8935565538541706855\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"3:0,2:0,0:0,4:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1729503638273691845,\"cover_sim_id\":1729503638273691845,\"spu_sim_id\":1729503638273691845,\"prod_sim_id\":1729642419063066925},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":9,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1730235584185602245",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221730235584185602245%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22k3LcHdWIp5S89JlRGIN%2FmvsTjh1E%2BKJIi7G33dIUOwHlnZurPEZrPDnw2O%2BNy3yg1KNzMOjVgHOTHIkHrk7IfqZ3lGq%2Bcur9i%2BC3Lg%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%229gybg5CPkNmilyO8bGzbqQfS5dmsqBB0kPkHwRiAFyh4hFjfxPnhXesMgahDTNYVsdqv4wuCwAXZBhs5c7vpNflnGTHtZ%2BN3SRuXOw%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221730235584185602245%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 500,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/0fd463d51b194163bab0681b75b490dd",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/0fd463d51b194163bab0681b75b490dd~tplv-fhlh96nyum-crop-webp:500:500.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 1
+}
+},
+"title": {
+"title": "Natural Topaz Ring, More Jewelry in Live Room, Topaz Rings, Topaz Gift, Natural Gemstone Rings, Natural Crystal Rings, Gemstone Jewelry for Women, Ring Gift for Birthday Anniversary"
+},
+"price": {
+"sku_id": "1730235584185667781",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "35.99",
+"sale_price_format": "35.99",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "35",
+"sale_price_decimal_part_format": "99",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1730235584185667781"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"k3LcHdWIp5S89JlRGIN/mvsTjh1E+KJIi7G33dIUOwHlnZurPEZrPDnw2O+Ny3yg1KNzMOjVgHOTHIkHrk7IfqZ3lGq+cur9i+C3Lg","mck":"9gybg5CPkNmilyO8bGzbqQfS5dmsqBB0kPkHwRiAFyh4hFjfxPnhXesMgahDTNYVsdqv4wuCwAXZBhs5c7vpNflnGTHtZ+N3SRuXOw","v":1}",
+"log_extra": "{"seller_product_id":"1730235584185602245","platform_product_id":"","seller_seller_id":"7495527153686448325","seller_shop_id":"7495527153686448325","title_strategy":{"title_tactics_type":0},"platform_sku_id":"","cover_strategy":{"image_tactics_type":0,"is_smart_crop":false},"is_platform_product":0,"sale_modes":"[]","platform_seller_id":"","platform_shop_id":"","sku_id":"1730235584185667781","seller_sku_id":"1730235584185667781"}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "202604300834399017084010030000009b3ac744886fd7c3"
+},
+"chain_param": {
+"bcm_multiverse_id": "202604300834399017084010030000009b3ac744886fd7c3"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:32,window_product:51","score":0.061321063322931094,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":8,\"recall_reason\":\"window_hive_inverted:32,window_product:51\",\"score\":0.061321063322931094,\"rank_score\":0.061321063322931094,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":7.41736,\"_DFO:is_feedback_max\":0.04396,\"_DFO:negative_review_max\":0.00207,\"_DFO:real_shipping_fee_mean\":5.13151,\"_DFO:review_based_negative_review_max\":0.02616,\"_MTL:product_click\":0.09947,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.40096},\"VT_DEBUG\":{\"pctr\":0.09947,\"pcvr\":0.00005,\"price\":35.99,\"pgmv\":0.00113,\"combine_score\":0.1223,\"sort_boost_weight\":1.0,\"root\":0.06132},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":48,\"recall_idx\":32,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:32,window_product_recall:51,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":0,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":3671,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":0,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":9,\"sess_refresh_idx\":1,\"rerank_idx\":8,\"before_rerank_idx\":8,\"product_id\":1730235584185602245,\"hybrid_index\":8,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"964232\",\"leaf\":\"973192\",\"rec_ctg_lv4\":\"97319200\"},\"ver_tag\":\"8935565538541707111\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"4:0,0:0,2:0,3:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1730235584185602245,\"cover_sim_id\":1730235584185602245,\"spu_sim_id\":1730235584185602245,\"prod_sim_id\":1729468307236557636},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":0,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+},
+{
+"product_id": "1729714213676486853",
+"status": 1,
+"pdp_schema": "aweme://ec/pdp?biz_type=0\u0026fullScreen=true\u0026orderRequestParams=%7B%7D\u0026requestParams=%7B%22product_id%22%3A%5B%221729714213676486853%22%5D%2C%22ab_img%22%3Afalse%2C%22traffic_signature%22%3A%22%7B%5C%22scene%5C%22%3A%5C%22Default.Showcase.Product_Page_Feeds%5C%22%7D%22%7D\u0026visitReportParams=%7B%22chain_key%22%3A%22%7B%5C%22cck%5C%22%3A%5C%22mwpfuLhQ2B736Xi2whE24WqFxrAoQp1wt94nzxpedNJIdbOj1xT5UBr7Qq7sDepC7Ilb9hdeYYiDzwOdaplt%2Fl0Ts8HVIth98klXVA%3D%3D%5C%22%2C%5C%22mck%5C%22%3A%5C%22bPC2KsPH%2F5CxeroLRP6R47Uje1hQFCeZf3vlkmefqRvfLgJf9EHBscNFvxiYYxBKMLMuRPbSReX3WDiQ9wrlfRrg%2F3eecCF%2B5fVUdw%3D%3D%5C%22%2C%5C%22v%5C%22%3A1%7D%22%2C%22material_id%22%3A%221729714213676486853%22%2C%22material_type%22%3A1%2C%22seller_id%22%3A%227495527153686448325%22%7D",
+"cover": {
+"image": {
+"height": 667,
+"width": 500,
+"uri": "tos-useast5-i-omjb5zjo8w-tx/9536fce4d408431897a98d2f9c755259",
+"url_list": [
+"https://p16-oec-general-useast5.ttcdn-us.com/tos-useast5-i-omjb5zjo8w-tx/9536fce4d408431897a98d2f9c755259~tplv-fhlh96nyum-crop-webp:500:667.webp?dr=12190\u0026t=555f072d\u0026ps=933b5bde\u0026shp=4ee6669e\u0026shcp=9b759fb9\u0026idc=useast8\u0026from=1323722398"
+],
+"ratio": 0.75
+}
+},
+"title": {
+"title": "South Red Carnelian Rings, More Jewelry in Live Room, South Red Agate Ring, Carnelian Ring, Carnelian Jewelry, Red Carnelian Crystal Rings"
+},
+"price": {
+"sku_id": "1729714213676552389",
+"currency_name": "USD",
+"currency_symbol": "$",
+"symbol_position": 1,
+"sale_price_decimal": "35.99",
+"sale_price_format": "35.99",
+"show_currency_space": false,
+"currency_show_mode": 1,
+"sale_price_integer_part_format": "35",
+"sale_price_decimal_part_format": "99",
+"decimal_point_symbol": "."
+},
+"sku_ids": [
+"1729714213676552389"
+],
+"seller_id": "7495527153686448325",
+"official_creator_id": "6953101682235212805",
+"biz_type": 0,
+"source": 5,
+"chain_key": "{"cck":"mwpfuLhQ2B736Xi2whE24WqFxrAoQp1wt94nzxpedNJIdbOj1xT5UBr7Qq7sDepC7Ilb9hdeYYiDzwOdaplt/l0Ts8HVIth98klXVA","mck":"bPC2KsPH/5CxeroLRP6R47Uje1hQFCeZf3vlkmefqRvfLgJf9EHBscNFvxiYYxBKMLMuRPbSReX3WDiQ9wrlfRrg/3eecCF+5fVUdw","v":1}",
+"tag_list": [
+{
+"tag_type": 301,
+"text": "2 sold"
+}
+],
+"log_extra": "{"is_platform_product":0,"sale_modes":"[]","seller_shop_id":"7495527153686448325","sku_id":"1729714213676552389","platform_sku_id":"","title_strategy":{"title_tactics_type":0},"sold_count_strategy":{"volume_type":"sold","volume":"2"},"seller_product_id":"1729714213676486853","platform_product_id":"","seller_seller_id":"7495527153686448325","platform_seller_id":"","platform_shop_id":"","seller_sku_id":"1729714213676552389","cover_strategy":{"image_tactics_type":0,"is_smart_crop":false}}",
+"bcm_standard_track": {
+"track_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000c0e5267a24737664"
+},
+"chain_param": {
+"bcm_multiverse_id": "20260430083439901708401003000000c0e5267a24737664"
+}
+},
+"author_id": "7356434712338056238",
+"recommend_info": "{"reason":"window_hive_inverted:33,window_product:45","score":0.06022695805785441,"debug_info":"{\"request_id\":\"7634467830070706463\",\"channel_id\":1111826,\"sub_chn_id\":0,\"pool_id\":0,\"list_entrance\":\"\",\"region\":\"US\",\"session_id\":2309086732270,\"req_ts\":1777538079,\"user_value\":1,\"predict_index\":9,\"recall_reason\":\"window_hive_inverted:33,window_product:45\",\"score\":0.06022695805785441,\"rank_score\":0.06022695805785441,\"model_name\":{\"_DFO\":\"1039783\",\"_MTL\":\"1246209\",\"_REP\":\"1130109\",\"promotion_ack_host\":\"\",\"promotion_ack_port\":\"0\"},\"model_preds\":{\"_DFO:e2e_days_mean\":8.15595,\"_DFO:is_feedback_max\":0.93526,\"_DFO:negative_review_max\":0.32151,\"_DFO:real_shipping_fee_mean\":5.51725,\"_DFO:review_based_negative_review_max\":0.98471,\"_MTL:product_click\":0.09603,\"_MTL:product_gmv\":0.00113,\"_MTL:product_order_cvr\":0.00005,\"_REP:rep_uid\":0.42086},\"VT_DEBUG\":{\"pctr\":0.09603,\"pcvr\":0.00005,\"price\":35.99,\"pgmv\":0.00113,\"combine_score\":0.11885,\"sort_boost_weight\":1.0,\"root\":0.06023},\"is_roi2\":0,\"trigger_items\":\",\",\"main_reason\":{\"recall_name\":\"window_hive_inverted\",\"merge_idx\":50,\"recall_idx\":33,\"all_recall_name\":\"ttmall_window_hive_inverted_recall:33,window_product_recall:45,\",\"trigger_key\":\"\",\"trigger_time\":\"\"},\"multimodal_cos_sim\":0.0,\"gs_high_pv_deboost_weight\":1.0,\"product_roughsort\":{\"model_name\":\"\",\"combine_score\":0.0,\"rank_idx\":\"0,0,0\",\"r_bid\":0.0},\"recflow_trigger_info_str\":\"\",\"cold_start_traffic_control\":{\"cs_boost\":1.0,\"sales_combine\":2,\"cs_gd\":0,\"is_cs\":0,\"is_in_cs\":0,\"cs_prior_gd\":0,\"cs_prior\":0,\"cs_ks\":0,\"cs_gd_tag\":-1,\"rb_tag\":-1,\"fb_tag\":-1,\"cs_abkey\":\"default\",\"lptc_use_v3_tag\":\"0\",\"cs_version\":\"0716_shop6\",\"cs_type\":\"shop6\",\"ct_shows_num\":4778,\"cs_time\":0,\"cs_status\":0,\"cs_pid_status\":0},\"sub_ord_cnt\":2,\"shelf_product_traffic_control\":{\"mo_code\":0,\"mo_score\":1.0,\"bp_is_branded\":0,\"bp_score\":1.0,\"bp_version\":\"\",\"bp_type\":\"\"},\"fatigue\":\"1,0,0\",\"recommend_source\":\"ttmall_sort\",\"product_index\":10,\"sess_refresh_idx\":1,\"rerank_idx\":9,\"before_rerank_idx\":9,\"product_id\":1729714213676486853,\"hybrid_index\":9,\"click_num\":194,\"show_num\":150,\"roughsort_index\":-1,\"after_merge_pid_cnt\":64,\"rl\":{\"tags\":\"recall_window_hive_inverted,recall_window_product\"},\"video2item_trigger_items\":\",\",\"category\":{\"lv1\":\"953224\",\"lv2\":\"963848\",\"leaf\":\"959112\",\"rec_ctg_lv4\":\"95911200\"},\"ver_tag\":\"8935565538541707111\",\"free_ship\":{\"new_fee\":0.0,\"old_fee\":0.0,\"free_ship\":0,\"group_free_ship\":\"4:0,3:0,2:0,0:0\"},\"lpa_is_bidding\":0,\"dup\":{\"dup_id\":1729714213676486853,\"cover_sim_id\":1729714213676486853,\"spu_sim_id\":1729714213676486853,\"prod_sim_id\":1732032773937926994},\"context_ttmall_seller_id\":7356434712338056238,\"clk_seq_len\":194,\"low_price_traffic_control\":{\"price_tag_v4\":0,\"ext_same_shop_price\":0.0,\"price_diff_rate\":0.0,\"sale_price_tag_v4\":6},\"sales\":2,\"gender\":\"2\",\"kg_gender\":\"2\",\"age\":\"5\"}"}",
+"recommend_req_id": "7634467830070706463"
+}
+],
+"property_map": {
+"add_cart_property": "[{"button_style":"icon_round","background_color":"grey","icon_color":"black"}]",
+"busines_config": "{"subContainerClass":"mb-8 mx-8","needAddCart":true,"needBuyNow":true,"needTagsLineBetween":false,"coverRadius":"8px"}",
+"buy_now_property": "[]",
+"price_property": "[{"type":"UNIT","size":"P2","arrangement":"VERTICAL","salePriceColor":"TextPrimary","originalPriceShowColor":"TextQuaternary","discountShowType":"8","discountShowBesidePrice":true,"discountBorderRadius":"4px","salePriceColorWithDiscount":"","hidePricePrefix":false,"preSize":"P2","afterSize":"P5"}]",
+"promotion_label_property": "{"icon_config":{"4":{"main_icon":{"dark_icon":{"url_list":["https://p16-oec-general.ttcdn-us.com/tos-maliva-i-o3syd03w52-us/flash_fill_icon_dark_20250430.pngtplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast5\u0026from=3454340299"]},"light_icon":{"url_list":["https://p16-oec-general.ttcdn-us.com/tos-maliva-i-o3syd03w52-us/flash_fill_icon_light_20250430.pngtplv-fhlh96nyum-resize-png:800:800.png?dr=12184\u0026t=555f072d\u0026ps=933b5bde\u0026shp=cde50ccb\u0026shcp=d9d491bf\u0026idc=useast5\u0026from=3454340299"]}}},"8":{"main_icon":{"dark_icon":{"url_list":[""]},"light_icon":{"url_list":[""]}}},"31":{"redirect":8},"32":{"redirect":8},"34":{"redirect":8},"35":{"redirect":8},"66":{"redirect":8},"67":{"redirect":8}},"label_config":{"4":{"textFont":13,"bgColor":{"dark":"transparent","light":"transparent"},"textColor":{"dark":"#ff576f","light":"#e10543"},"countdownFont":13,"countdownTime":86400000,"countDownNumberWidth":"16px","countDownDividerWidth":"3px","countDownMarginLeft":"3px","gap":3,"padding":0,"style":100},"6":{"redirect":4},"7":{"redirect":4},"8":{"textFont":13,"bgColor":{"dark":"#007B7B","light":"#007B7B"},"textColor":{"dark":"#FFFFFF","light":"#FFFFFF"},"gap":3,"padding":4,"style":100,"rtlIcon":true},"10":{"redirect":4},"11":{"redirect":4},"18":{"redirect":4},"23":{"redirect":4},"25":{"redirect":4},"26":{"redirect":4},"28":{"redirect":4},"29":{"redirect":4},"31":{"redirect":8},"32":{"redirect":8},"34":{"redirect":8},"35":{"redirect":8},"37":{"redirect":4},"46":{"redirect":4},"55":{"redirect":4},"57":{"redirect":4},"66":{"redirect":8},"67":{"redirect":8},"70":{"redirect":4},"115":{"redirect":4},"136":{"redirect":4}}}",
+"rate_property": "[{"rating_ui_style":"five_star","rating_text_display_type":"before_star"}]",
+"tag_property": "",
+"title_property": "[{"title_lines":2}]"
+}
+}
+}
+},
+"selection_schema": "",
+"no_product_title": "",
+"no_product_text": "",
+"diversion_module": 0,
+"product_count_info": {
+"count": "64",
+"count_info": "64 products",
+"value": 64
+},
+"sold_count_info": {
+"count": "1873",
+"count_info": "1.8K+ sold",
+"value": 1873
+},
+"has_affiliate_permission": false,
+"product_list_title": "Sanatsparkle's showcase",
+"extra_val": {
+"us_uk_show_voucher_info": "1"
+}
+},
+"message": ""
+}
+联系方式：@some1899
