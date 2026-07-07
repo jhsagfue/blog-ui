@@ -1,0 +1,1009 @@
+在电商数据分析、商品监控和智能运营场景中，商品销量数据是衡量市场热度的重要指标。通过分析商品销量变化，企业可以了解热门商品趋势、优化选品策略、监控竞争产品表现，并辅助运营人员制定营销计划。
+
+对于开发者而言，Python凭借丰富的第三方库和简洁的开发方式，非常适合用于电商API接口对接、数据处理和自动化任务开发。本文将围绕Python调用京东商品销量接口的完整流程展开介绍，包括开发准备、接口请求、参数配置、代码实现、数据解析以及项目实践中的优化方案。
+
+一、Python获取京东商品销量数据的应用场景
+
+通过Python程序获取京东商品销量数据，可以应用于多个业务方向：
+
+商品销量排行榜开发
+竞品数据监控
+电商运营分析
+商品趋势预测
+数据可视化展示
+自动化数据报表生成
+企业选品系统
+
+例如，一个电商分析平台可以每天定时获取指定商品销量，并结合价格、库存、评价等信息，形成完整的数据分析模型。
+
+相比人工查询方式，API接口结合Python脚本能够实现自动化、批量化的数据处理。
+
+二、开发环境准备
+
+在开始开发之前，需要准备Python运行环境。
+
+推荐环境：
+
+Python 3.x
+requests网络请求库
+json数据解析模块
+pandas数据分析库（可选）
+
+安装requests：
+
+pip install requests
+
+如果后续需要进行销量数据统计：
+
+pip install pandas
+
+同时，需要准备接口调用所需认证信息：
+
+App Key
+App Secret
+Access Token
+
+这些参数用于验证开发者身份。
+
+在生产环境中，建议将认证信息保存在配置文件或环境变量中，不要直接写入代码。
+
+三、京东商品销量接口调用流程
+
+使用Python调用商品销量接口，一般流程如下：
+
+获取商品SKU
+↓
+准备API请求参数
+↓
+生成签名信息
+↓
+发送HTTP请求
+↓
+接收JSON数据
+↓
+解析销量字段
+↓
+保存数据库
+
+其中，SKU是查询商品的核心参数。
+
+例如：
+
+100012345678
+
+系统通过该编号定位具体商品，并返回对应销量数据。
+
+四、Python请求接口代码示例
+
+下面展示一个基础Python接口调用示例：
+
+import requests
+import json
+
+API_URL = "https://api.example.com/jd/product/sales"
+
+access_token = "YOUR_ACCESS_TOKEN"
+
+params = {
+"sku_id": "100012345678",
+"timestamp": "2026-06-28 10:00:00"
+}
+
+headers = {
+"Authorization": f"Bearer {access_token}",
+"Content-Type": "application/json"
+}
+
+response = requests.get(
+API_URL,
+params=params,
+headers=headers
+)
+
+result = response.json()
+
+print(json.dumps(result, indent=4, ensure_ascii=False))
+
+代码执行后，会返回接口响应数据。
+
+实际项目开发时，需要根据开放平台提供的接口文档调整：
+
+请求地址
+参数名称
+请求方式
+认证方式
+五、返回数据解析实践
+
+接口通常返回JSON格式数据。
+
+示例：
+
+{
+"code":0,
+"message":"success",
+"data":{
+"sku_id":"100012345678",
+"sales_count":25800,
+"update_time":"2026-06-28"
+}
+}
+
+Python解析方式：
+
+data = result.get("data")
+
+if data:
+sku_id = data.get("sku_id")
+sales = data.get("sales_count")
+update_time = data.get("update_time")
+
+print("商品SKU:", sku_id)
+print("销量:", sales)
+print("更新时间:", update_time)
+
+通过字段解析，可以提取核心业务数据。
+
+主要字段：
+
+sku_id
+
+商品唯一编号。
+
+可用于关联：
+
+商品详情
+商品价格
+商品分类
+sales_count
+
+销量数据。
+
+可用于：
+
+商品排名
+热销分析
+趋势统计
+update_time
+
+数据更新时间。
+
+用于判断数据是否需要刷新。
+
+六、批量获取多个商品销量
+
+实际业务中，通常需要查询多个商品。
+
+例如：
+
+sku_list = [
+"100012345678",
+"100098765432",
+"100055555555"
+]
+
+for sku in sku_list:
+
+params = {
+"sku_id": sku
+}
+
+response = requests.get(
+API_URL,
+params=params,
+headers=headers
+)
+
+data = response.json()
+
+print(data)
+
+批量查询时需要注意接口访问频率限制。
+
+建议：
+
+控制请求间隔；
+使用任务队列；
+避免短时间大量访问。
+七、销量数据保存数据库
+
+如果需要长期分析销量变化，可以将数据保存到数据库。
+
+例如MySQL表结构：
+
+CREATE TABLE jd_sales_data (
+id INT PRIMARY KEY AUTO_INCREMENT,
+sku_id VARCHAR(50),
+sales_count INT,
+update_time DATETIME
+);
+
+Python写入数据库示例：
+
+import pymysql
+
+connection = pymysql.connect(
+host="localhost",
+user="root",
+password="password",
+database="jd_data"
+)
+
+cursor = connection.cursor()
+
+sql = """
+INSERT INTO jd_sales_data
+(sku_id, sales_count, update_time)
+VALUES (%s,%s,%s)
+"""
+
+cursor.execute(
+sql,
+(
+sku_id,
+sales,
+update_time
+)
+)
+
+connection.commit()
+
+cursor.close()
+connection.close()
+
+通过数据库存储，可以进一步生成：
+
+日销量趋势
+周销量排行
+月度销售分析
+八、异常处理机制
+
+稳定的接口程序必须考虑异常情况。
+
+Token失效
+
+可能原因：
+
+授权过期；
+Token错误。
+
+处理方式：
+
+检查Token有效时间；
+根据授权流程重新获取。
+请求超时
+
+建议设置超时时间：
+
+requests.get(
+API_URL,
+timeout=10
+)
+
+避免程序长期等待。
+
+接口错误
+
+增加状态判断：
+
+if result.get("code") != 0:
+print("接口调用失败")
+
+及时记录错误原因。
+
+请求频率限制
+
+解决方案：
+
+增加sleep间隔；
+使用缓存；
+分批执行任务。
+九、项目优化实践
+
+在实际企业项目中，可以进一步优化系统。
+
+使用定时任务
+
+例如：
+
+每天凌晨自动同步商品销量。
+
+常用方式：
+
+Linux Cron
+Celery任务队列
+定时调度框架
+使用缓存
+
+对于短时间重复查询的数据，可以使用Redis缓存，提高访问速度。
+
+数据可视化
+
+结合Python数据分析工具，可以生成：
+
+销量折线图
+商品排行图
+销售趋势报告
+
+帮助运营人员快速了解市场变化。
+
+日志记录
+
+记录：
+
+请求时间
+商品SKU
+返回状态
+异常信息
+
+方便后期维护。
+
+十、总结
+
+Python获取京东商品销量数据，是电商数据开发中常见的实践场景。通过API接口结合Python程序，开发者可以实现商品销量自动查询、批量同步、数据存储以及趋势分析。
+
+在实际开发过程中，需要重点关注接口认证、参数配置、异常处理、请求频率控制和数据安全等问题。通过结合数据库、缓存、任务调度和数据分析工具，可以进一步构建完整的电商数据分析系统，为商品运营、市场研究和智能决策提供可靠的数据支持。
+
+请求示例：
+
+{
+"data": {
+"api": "mtop.jd.iteam.get.sold",
+"data": {
+"debug": {
+"app": "detailcache",
+"cachedTimestamp": "",
+"host": "",
+"dataFrom": ""
+},
+"feature": {},
+"consumerProtection": null,
+"data": [
+{
+"skuId": 100292223028,
+"name": "蒙牛牛奶花生双蛋白饮品苗条装200ml×12盒送礼礼盒装",
+"imgPath": "jfs/t1/399756/30/908/164328/699d65cdFf2b65c45/00833203203c3b09.jpg",
+"imageURL": "jfs/t1/399756/30/908/164328/699d65cdFf2b65c45/00833203203c3b09.jpg",
+"adTitle": "100292223028-风味奶",
+"catId": 36841,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "风味奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛牛奶花生双蛋白饮品苗条装200ml×12盒送礼礼盒装",
+"deliveryTime": "2025-11-03",
+"spuId": 100082201036,
+"sales": 224
+},
+{
+"skuId": 100082201036,
+"name": "蒙牛全脂纯牛奶250ml24盒 世界杯定制装",
+"imgPath": "jfs/t1/426264/2/21524/149828/69feaa36Fc7a643d4/0083320320b30adf.jpg",
+"imageURL": "jfs/t1/426264/2/21524/149828/69feaa36Fc7a643d4/0083320320b30adf.jpg",
+"adTitle": "100082201036-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛全脂纯牛奶250ml24盒 世界杯定制装",
+"deliveryTime": "2023-12-25",
+"spuId": 100082201036,
+"sales": 40969
+},
+{
+"skuId": 100149086342,
+"name": "海尔（Haier）179L两门小冰箱二级能效冷冻大抽屉低噪节能直冷白色BCD-179LHC2E0WV",
+"imgPath": "jfs/t1/434385/32/1531/123977/69ff1d02F1d640f84/0083320320ccfc2b.jpg",
+"imageURL": "jfs/t1/434385/32/1531/123977/69ff1d02F1d640f84/0083320320ccfc2b.jpg",
+"adTitle": "100149086342-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）179L两门小冰箱二级能效冷冻大抽屉低噪节能直冷白色BCD-179LHC2E0WV",
+"deliveryTime": "2024-10-15",
+"spuId": 100292550928,
+"sales": 1114
+},
+{
+"skuId": 100346090186,
+"name": "海尔（Haier）「真省电」225L三门家用小户型冰箱不占地一级能效节能低噪HC3-225LHC3E0S9",
+"imgPath": "jfs/t1/422259/14/19537/11009/69f0566bF3f78d78b/0083320320dcf654.jpg",
+"imageURL": "jfs/t1/422259/14/19537/11009/69f0566bF3f78d78b/0083320320dcf654.jpg",
+"adTitle": "100346090186-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」225L三门家用小户型冰箱不占地一级能效节能低噪HC3-225LHC3E0S9",
+"deliveryTime": "2026-05-09",
+"spuId": 100164436731,
+"sales": 0
+},
+{
+"skuId": 100210638040,
+"name": "海尔（Haier）「真省电」310L三门冰箱抗菌净味一级能效风冷无霜BCD-310WGHD3E7WV(银)国家补贴",
+"imgPath": "jfs/t1/434812/38/701/143596/69ff1d15F4d339bd0/0083320320672108.jpg",
+"imageURL": "jfs/t1/434812/38/701/143596/69ff1d15F4d339bd0/0083320320672108.jpg",
+"adTitle": "100210638040-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」310L三门冰箱抗菌净味一级能效风冷无霜BCD-310WGHD3E7WV(银)国家补贴",
+"deliveryTime": "2025-04-09",
+"spuId": 100164436731,
+"sales": 2773
+},
+{
+"skuId": 100151357351,
+"name": "海尔（Haier）123L两门小户型冰箱二级能效抗菌净味三档可调白色BCD-123GHTMZ0WV",
+"imgPath": "jfs/t1/424975/18/19524/125335/69ff1d05Fa6a98eda/008332032003d4cd.jpg",
+"imageURL": "jfs/t1/424975/18/19524/125335/69ff1d05Fa6a98eda/008332032003d4cd.jpg",
+"adTitle": "100151357351-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）123L两门小户型冰箱二级能效抗菌净味三档可调白色BCD-123GHTMZ0WV",
+"deliveryTime": "2025-02-18",
+"spuId": 100292550928,
+"sales": 823
+},
+{
+"skuId": 100006970555,
+"name": "蒙牛【新鲜日期】全脂纯牛奶200ml24盒 家庭年货囤货 电商定制",
+"imgPath": "jfs/t1/410407/26/12784/165037/69ccd848F592de453/00833203203d0219.jpg",
+"imageURL": "jfs/t1/410407/26/12784/165037/69ccd848F592de453/00833203203d0219.jpg",
+"adTitle": "100006970555-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛【新鲜日期】全脂纯牛奶200ml24盒 家庭年货囤货 电商定制",
+"deliveryTime": "2020-05-13",
+"spuId": 100082201036,
+"sales": 64803
+},
+{
+"skuId": 100118144280,
+"name": "蒙牛全脂纯牛奶250ml21盒 世界杯定制装",
+"imgPath": "jfs/t1/426789/21/20294/141779/69fec93eF91f1badc/0083320320da167f.jpg",
+"imageURL": "jfs/t1/426789/21/20294/141779/69fec93eF91f1badc/0083320320da167f.jpg",
+"adTitle": "100118144280-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛全脂纯牛奶250ml21盒 世界杯定制装",
+"deliveryTime": "2024-07-11",
+"spuId": 100082201036,
+"sales": 26448
+},
+{
+"skuId": 100039393046,
+"name": "京东京造超厚婴儿手口湿巾80抽5包 新生儿湿纸巾宝宝手口洗PP湿巾纸",
+"imgPath": "jfs/t1/406327/9/14880/108016/69c0e60aF7001c291/008332032004213d.jpg",
+"imageURL": "jfs/t1/406327/9/14880/108016/69c0e60aF7001c291/008332032004213d.jpg",
+"adTitle": "100039393046-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造超厚婴儿手口湿巾80抽5包 新生儿湿纸巾宝宝手口洗PP湿巾纸",
+"deliveryTime": "2022-05-24",
+"spuId": 100064855078,
+"sales": 115
+},
+{
+"skuId": 100175689783,
+"name": "蒙牛全脂纯牛奶211ml10盒 小规格易吸收",
+"imgPath": "jfs/t1/401560/7/19153/141359/69b3f66cF8ad76429/0083320320caed49.jpg",
+"imageURL": "jfs/t1/401560/7/19153/141359/69b3f66cF8ad76429/0083320320caed49.jpg",
+"adTitle": "100175689783-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛全脂纯牛奶211ml10盒 小规格易吸收",
+"deliveryTime": "2025-05-26",
+"spuId": 100082201036,
+"sales": 7485
+},
+{
+"skuId": 100109995264,
+"name": "海尔（Haier）「真省电」217L三门家用小户型冰箱抗菌净味一级能效风冷无霜星辉银BCD-217WGHC3E9S9国家补贴",
+"imgPath": "jfs/t1/432755/17/6006/155215/69ff1cf7F1c017be5/0083320320a8f056.jpg",
+"imageURL": "jfs/t1/432755/17/6006/155215/69ff1cf7F1c017be5/0083320320a8f056.jpg",
+"adTitle": "100109995264-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」217L三门家用小户型冰箱抗菌净味一级能效风冷无霜星辉银BCD-217WGHC3E9S9国家补贴",
+"deliveryTime": "2024-04-29",
+"spuId": 100164436731,
+"sales": 8080
+},
+{
+"skuId": 100065194013,
+"name": "京东京造加厚65g婴儿手口湿巾10抽30包 宝宝湿纸巾小包便携装 整箱",
+"imgPath": "jfs/t1/410962/20/16067/266167/69ce43f0Fbc29cb72/0083320320e43c58.jpg",
+"imageURL": "jfs/t1/410962/20/16067/266167/69ce43f0Fbc29cb72/0083320320e43c58.jpg",
+"adTitle": "100065194013-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造加厚65g婴儿手口湿巾10抽30包 宝宝湿纸巾小包便携装 整箱",
+"deliveryTime": "2023-08-24",
+"spuId": 100064855078,
+"sales": 979
+},
+{
+"skuId": 100210991502,
+"name": "海尔（Haier）「真省电」193L两门家用小户型冰箱一级能效风冷无霜抗菌净味三档变温BCD-193WGHC2E7WV国家补贴",
+"imgPath": "jfs/t1/426769/40/19787/148835/69ff1d18Fce8a405e/0083320320001887.jpg",
+"imageURL": "jfs/t1/426769/40/19787/148835/69ff1d18Fce8a405e/0083320320001887.jpg",
+"adTitle": "100210991502-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」193L两门家用小户型冰箱一级能效风冷无霜抗菌净味三档变温BCD-193WGHC2E7WV国家补贴",
+"deliveryTime": "2025-04-09",
+"spuId": 100292550928,
+"sales": 1598
+},
+{
+"skuId": 100135384332,
+"name": "海尔（Haier）「真省电」285L两门家用小户型冰箱一级能效风冷无霜左右开门可调BCD-285WGHC2DEWV国家补贴",
+"imgPath": "jfs/t1/426462/39/20578/128641/69ff1cfcF4a1290ea/008332032052a84e.jpg",
+"imageURL": "jfs/t1/426462/39/20578/128641/69ff1cfcF4a1290ea/008332032052a84e.jpg",
+"adTitle": "100135384332-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」285L两门家用小户型冰箱一级能效风冷无霜左右开门可调BCD-285WGHC2DEWV国家补贴",
+"deliveryTime": "2024-08-23",
+"spuId": 100292550928,
+"sales": 108
+},
+{
+"skuId": 100149086362,
+"name": "海尔（Haier）217L三门小冰箱节能省电除菌低噪白色BCD-217LHC3E0WV",
+"imgPath": "jfs/t1/434722/26/934/125240/69ff1d03F07a89f1e/0083320320b6ed66.jpg",
+"imageURL": "jfs/t1/434722/26/934/125240/69ff1d03F07a89f1e/0083320320b6ed66.jpg",
+"adTitle": "100149086362-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）217L三门小冰箱节能省电除菌低噪白色BCD-217LHC3E0WV",
+"deliveryTime": "2024-10-15",
+"spuId": 100164436731,
+"sales": 2947
+},
+{
+"skuId": 100207849177,
+"name": "京东京造婴儿手口湿巾80抽10包 湿纸巾婴儿湿巾手口用温和柔软亲肤",
+"imgPath": "jfs/t1/407360/24/7970/109900/69c0e604F41795ca9/0083320320c09408.jpg",
+"imageURL": "jfs/t1/407360/24/7970/109900/69c0e604F41795ca9/0083320320c09408.jpg",
+"adTitle": "100207849177-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造婴儿手口湿巾80抽10包 湿纸巾婴儿湿巾手口用温和柔软亲肤",
+"deliveryTime": "2025-09-28",
+"spuId": 100064855078,
+"sales": 225
+},
+{
+"skuId": 100163173118,
+"name": "海尔（Haier）88L两门小户型冰箱二级能效抗菌净味三档可调左右开门可调BCD-88GHTMZ0WV",
+"imgPath": "jfs/t1/429794/35/12786/138996/69ff1d07F26bb9360/0083320320737aa5.jpg",
+"imageURL": "jfs/t1/429794/35/12786/138996/69ff1d07F26bb9360/0083320320737aa5.jpg",
+"adTitle": "100163173118-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）88L两门小户型冰箱二级能效抗菌净味三档可调左右开门可调BCD-88GHTMZ0WV",
+"deliveryTime": "2024-12-11",
+"spuId": 100292550928,
+"sales": 1362
+},
+{
+"skuId": 100292550928,
+"name": "海尔（Haier）「真省电」285L两门家用小户型冰箱一级能效风冷无霜左右开门可调灰色BCD-285WGHC2DES9国家补贴",
+"imgPath": "jfs/t1/429064/29/16141/150552/69ff1d1fFe0a1e5df/0083320320ba6ce3.jpg",
+"imageURL": "jfs/t1/429064/29/16141/150552/69ff1d1fFe0a1e5df/0083320320ba6ce3.jpg",
+"adTitle": "100292550928-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」285L两门家用小户型冰箱一级能效风冷无霜左右开门可调灰色BCD-285WGHC2DES9国家补贴",
+"deliveryTime": "2025-11-04",
+"spuId": 100292550928,
+"sales": 1674
+},
+{
+"skuId": 100064855078,
+"name": "京东京造加厚65g婴儿手口湿巾80抽10包宝宝亲肤湿纸巾 整箱囤货装",
+"imgPath": "jfs/t1/407354/35/9861/119477/69c0e609F1a9d288d/008332032084444f.jpg",
+"imageURL": "jfs/t1/407354/35/9861/119477/69c0e609F1a9d288d/008332032084444f.jpg",
+"adTitle": "100064855078-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造加厚65g婴儿手口湿巾80抽10包宝宝亲肤湿纸巾 整箱囤货装",
+"deliveryTime": "2023-09-15",
+"spuId": 100064855078,
+"sales": 326
+},
+{
+"skuId": 100346061670,
+"name": "海尔（Haier）海尔「真省电」200L三门家用小户型冰箱不占地一级能效风冷无霜节能低噪HC3-200WGHC2E9S9",
+"imgPath": "jfs/t1/427845/5/4122/11909/69f063d2F3d2a4d3a/0083320320eae6c4.jpg",
+"imageURL": "jfs/t1/427845/5/4122/11909/69f063d2F3d2a4d3a/0083320320eae6c4.jpg",
+"adTitle": "100346061670-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）海尔「真省电」200L三门家用小户型冰箱不占地一级能效风冷无霜节能低噪HC3-200WGHC2E9S9",
+"deliveryTime": "2026-05-09",
+"spuId": 100164436731,
+"sales": 0
+},
+{
+"skuId": 100065100456,
+"name": "京东京造Pure 100%全棉婴儿湿巾80抽6包 新生儿手口湿纸巾成人可用",
+"imgPath": "jfs/t1/407433/15/7629/68324/69c0e609Ff86c4c98/0083320320d32422.jpg",
+"imageURL": "jfs/t1/407433/15/7629/68324/69c0e609Ff86c4c98/0083320320d32422.jpg",
+"adTitle": "100065100456-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造Pure 100%全棉婴儿湿巾80抽6包 新生儿手口湿纸巾成人可用",
+"deliveryTime": "2023-09-12",
+"spuId": 100064855078,
+"sales": 489
+},
+{
+"skuId": 100164436731,
+"name": "海尔（Haier）「真省电」251L三门家用小户型冰箱抗菌净味一级能效风冷无霜星辉银BCD-251WGHC3E7WV(银)国家补贴",
+"imgPath": "jfs/t1/431832/37/8622/203048/69ff1d0bFc405abcc/0083320320a04c89.jpg",
+"imageURL": "jfs/t1/431832/37/8622/203048/69ff1d0bFc405abcc/0083320320a04c89.jpg",
+"adTitle": "100164436731-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」251L三门家用小户型冰箱抗菌净味一级能效风冷无霜星辉银BCD-251WGHC3E7WV(银)国家补贴",
+"deliveryTime": "2025-04-09",
+"spuId": 100164436731,
+"sales": 2522
+},
+{
+"skuId": 100070971530,
+"name": "蒙牛全脂纯牛奶1L6盒 家庭早餐老人儿童奶健身 送礼盒装",
+"imgPath": "jfs/t1/402492/30/12396/150536/69b3f66eFa1775737/00833203202673e8.jpg",
+"imageURL": "jfs/t1/402492/30/12396/150536/69b3f66eFa1775737/00833203202673e8.jpg",
+"adTitle": "100070971530-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛全脂纯牛奶1L6盒 家庭早餐老人儿童奶健身 送礼盒装",
+"deliveryTime": "2023-10-26",
+"spuId": 100082201036,
+"sales": 3027
+},
+{
+"skuId": 100115417761,
+"name": "京东京造婴儿手口湿巾80抽8包 湿纸巾婴儿湿巾手口屁屁专用温和亲肤",
+"imgPath": "jfs/t1/406332/17/14248/80920/69c0e608F95b0d47a/00833203201fa7f0.jpg",
+"imageURL": "jfs/t1/406332/17/14248/80920/69c0e608F95b0d47a/00833203201fa7f0.jpg",
+"adTitle": "100115417761-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造婴儿手口湿巾80抽8包 湿纸巾婴儿湿巾手口屁屁专用温和亲肤",
+"deliveryTime": "2024-09-14",
+"spuId": 100064855078,
+"sales": 1891
+},
+{
+"skuId": 2693720,
+"name": "蒙牛全脂纯牛奶250ml16盒 牛奶年货礼盒 电商定制",
+"imgPath": "jfs/t1/422553/7/14669/167772/69eacdbeFfc79bcc5/00833203202b5532.jpg",
+"imageURL": "jfs/t1/422553/7/14669/167772/69eacdbeFfc79bcc5/00833203202b5532.jpg",
+"adTitle": "2693720-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛全脂纯牛奶250ml16盒 牛奶年货礼盒 电商定制",
+"deliveryTime": null,
+"spuId": 100082201036,
+"sales": 59124
+},
+{
+"skuId": 100222087831,
+"name": "海尔（Haier）「一级能效风冷无霜」165L两门家用小户型冰箱真省电抗菌净味灰色HC2-165WGHC2E9S9国家补贴",
+"imgPath": "jfs/t1/434130/37/2502/170774/69ff1d19F800daca0/00833203203f727c.jpg",
+"imageURL": "jfs/t1/434130/37/2502/170774/69ff1d19F800daca0/00833203203f727c.jpg",
+"adTitle": "100222087831-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「一级能效风冷无霜」165L两门家用小户型冰箱真省电抗菌净味灰色HC2-165WGHC2E9S9国家补贴",
+"deliveryTime": "2025-11-05",
+"spuId": 100292550928,
+"sales": 6851
+},
+{
+"skuId": 100105922788,
+"name": "蒙牛纯牛奶钻包200ml24盒 电商定制",
+"imgPath": "jfs/t1/401356/39/17679/151091/69b3f66fF9f4dcb33/00833203207849af.jpg",
+"imageURL": "jfs/t1/401356/39/17679/151091/69b3f66fF9f4dcb33/00833203207849af.jpg",
+"adTitle": "100105922788-基础牛奶",
+"catId": 36835,
+"catLv1Id": 36720,
+"catLv2Id": 36722,
+"makerId": "12690",
+"makerName": "蒙牛（MENGNIU）",
+"catName": "基础牛奶",
+"catLv1Name": "水饮冲调",
+"catLv2Name": "常温奶",
+"storeName": "蒙牛京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "蒙牛纯牛奶钻包200ml24盒 电商定制",
+"deliveryTime": "2024-04-18",
+"spuId": 100082201036,
+"sales": 12054
+},
+{
+"skuId": 100346010166,
+"name": "海尔（Haier）「真省电」180L两门家用小户型冰箱不占地一级能效节能低噪HC2-180LHC3E0S9",
+"imgPath": "jfs/t1/425215/14/12285/11205/69f028d6F4d6090ab/0083320320dbba93.jpg",
+"imageURL": "jfs/t1/425215/14/12285/11205/69f028d6F4d6090ab/0083320320dbba93.jpg",
+"adTitle": "100346010166-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「真省电」180L两门家用小户型冰箱不占地一级能效节能低噪HC2-180LHC3E0S9",
+"deliveryTime": "2026-05-09",
+"spuId": 100292550928,
+"sales": 0
+},
+{
+"skuId": 100208089779,
+"name": "海尔（Haier）「一级能效风冷无霜」165L两门家用小户型冰箱真省电抗菌净味白色HC2-165WGHC2E9WV国家补贴",
+"imgPath": "jfs/t1/432881/26/5980/159138/69ff1d14Fac86026f/00833203204c1a1d.jpg",
+"imageURL": "jfs/t1/432881/26/5980/159138/69ff1d14Fac86026f/00833203204c1a1d.jpg",
+"adTitle": "100208089779-冰箱",
+"catId": 878,
+"catLv1Id": 737,
+"catLv2Id": 794,
+"makerId": "7817",
+"makerName": "海尔（Haier）",
+"catName": "冰箱",
+"catLv1Name": "家用电器",
+"catLv2Name": "大 家 电",
+"storeName": "海尔京东自营旗舰店",
+"positiveRate": 99,
+"skuName": "海尔（Haier）「一级能效风冷无霜」165L两门家用小户型冰箱真省电抗菌净味白色HC2-165WGHC2E9WV国家补贴",
+"deliveryTime": "2025-09-09",
+"spuId": 100292550928,
+"sales": 3542
+},
+{
+"skuId": 100272554398,
+"name": "京东京造婴儿手口湿巾奶皮湿巾80抽5包 天然植物超厚倍柔手口可用湿巾",
+"imgPath": "jfs/t1/407527/1/8134/109140/69c0e603F77382d57/00833203200f3ad8.jpg",
+"imageURL": "jfs/t1/407527/1/8134/109140/69c0e603F77382d57/00833203200f3ad8.jpg",
+"adTitle": "100272554398-婴童湿巾",
+"catId": 22491,
+"catLv1Id": 1319,
+"catLv2Id": 1527,
+"makerId": "299330",
+"makerName": "京东京造",
+"catName": "婴童湿巾",
+"catLv1Name": "母婴",
+"catLv2Name": "婴童洗护",
+"storeName": "京东京造自营旗舰店",
+"positiveRate": 99,
+"skuName": "京东京造婴儿手口湿巾奶皮湿巾80抽5包 天然植物超厚倍柔手口可用湿巾",
+"deliveryTime": "2025-09-18",
+"spuId": 100064855078,
+"sales": 81
+}
+]
+},
+"ret": [
+"SUCCESS::调用成功"
+],
+"v": "1.0"
+},
+"msg": "请求成功，扣除积分",
+"x_time": 0.39,
+"status_code": 2000,
+"log": null,
+"request_info": {
+"api": "mtop.jd.iteam.get.sold",
+"point": "-1.9",
+"totla_points": 390.995,
+"secretkey": "4e716b1f2782f7***********************8a855f917385c7"
+}
+}
+联系方式：@some1899
